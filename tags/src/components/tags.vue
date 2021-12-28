@@ -2,7 +2,7 @@
   <div class="input-container">
     <h1>{{title}}</h1>
     <div type="text" id="text" contenteditable="true" @input="message"></div>
-    <div id="tag-list">
+    <div id="tag-list" v-show="tagList.length > 0">
       <div class="tag" v-on:click="selectTag(tag)" v-for="tag in tagList" :key="tag">
           <span>#{{tag}}</span>
       </div>
@@ -23,7 +23,7 @@ export default {
       return {
           title: 'Tags test',
           tagList: [],
-          wordArray: [],
+          swapText: [],
           givenList: [
             'liver',
             'pain',
@@ -63,64 +63,70 @@ export default {
   methods: {
       selectTag(tag) {
         let text = this.$el.querySelector('#text').innerHTML;
-        // this.getCaretPosition();
         const hastageLastPoition = text.lastIndexOf('#');
-        text = text.slice(0, hastageLastPoition) + `<span style="color:deepskyblue;">#${tag}</span>&nbsp;`;
+        text = text.slice(0, hastageLastPoition) + `<span style="color:deepskyblue;">#${tag}</span> `;
+        // parse text and replace by tag
         this.$el.querySelector('#text').innerHTML = text;
         this.cleanTagList();
-        this.resetCaretPosition();
+        this.putCaretAtEnd();
       },
-      getCaretPosition() {
-        // const el = this.$el.querySelector('#text-zone')
-        const range = document.createRange();
-        const sel = window.getSelection();
-
-        range.collapse(true);
-        
-        console.log('range', range);
-        console.log('sel', sel);
-      },
-      // clearText() {
-      //   let text = this.$el.querySelector('#text').innerHTML;
-      //   text.replaceAll('<span style="color:deepskyblue;">&nbsp;');
-      //   text.replaceAll('</span>', '');
-      // },
-      resetCaretPosition() {
+      putCaretAtEnd() {
+        // go to next node child
         const el = this.$el.childNodes[1];
         const range = document.createRange();
         const sel = window.getSelection();
 
-        range.setStartAfter(el, el.childNodes.length - 1); // el.innerHTML.length
+        range.setStartAfter(el.lastChild);
         range.collapse(true);
         
         sel.removeAllRanges();
         sel.addRange(range);
-        // left => offsetLeft top => offsetTop + offsetHeight
+      },
+      resetCaretPosition() {
+        // go to next node child
+        const el = this.$el.childNodes[1];
+        const range = document.createRange();
+        const sel = window.getSelection();
+
+        range.setStartAfter(el.lastChild, el.lastChild.length);
+        range.collapse(true);
+        
+        sel.removeAllRanges();
+        sel.addRange(range);
       },
       cleanTagList() {
           this.tagList = [];
       },
+      cleanText(text){
+        const newText = text.replaceAll('<span style="color:deepskyblue;">', '');
+        return newText.replaceAll('</span> ', '');
+      },
       message: function(el) {
-        this.wordArray = el.target.innerHTML.split(' ');
-        document.getSelection().anchorNode; // current node
-        const reversedArray = this.wordArray.reverse();
-        for (let i = 0; i < reversedArray.length; i++) {
-          if (reversedArray[i].includes('#')){
-            const text = reversedArray[i];
-            reversedArray[i] = `<span style="color:deepskyblue;">${text}</span>` + ' ';
-            const newTags = text.slice(1, text.length);
-            if (newTags.length > 0) {
-              this.tagList = this.givenList.filter((elem) => elem.includes(newTags));
-
-              const currentTextZone = document.getSelection();
-              const listBlock = this.$el.querySelector('#tag-list');
-              listBlock.style.left = `${currentTextZone.anchorOffset}px`;
-              listBlock.style.top = `${currentTextZone.anchorOffset}px`;
-            }
-            // el.target.innerHTML = reversedArray.reverse().join(' ');
-            break;
+        const currentText = this.cleanText(el.target.innerHTML);
+        const wordArray = currentText.split(' ');
+        const modifiedWord = wordArray.filter((word) => {
+          return !this.swapText.includes(word);
+        })[0];
+        if (modifiedWord.includes('#')) {
+          const searchText = modifiedWord.slice(modifiedWord.indexOf('#') + 1, modifiedWord.length);
+          if (searchText.length > 0) {
+            this.tagList = this.givenList.filter((elem) => elem.includes(searchText));
           }
+          const renderingText = wordArray.map(word => {
+            const tmpHashtagPosition = word.indexOf('#');
+            if (tmpHashtagPosition === -1) {
+              return word;
+            }
+            if (tmpHashtagPosition !== 0) {
+              const tmpTxt = word.slice(tmpHashtagPosition, -1);
+              return word.split(tmpTxt) + `<span style="color:deepskyblue;">${tmpTxt}</span> `;
+            }
+            return `<span style="color:deepskyblue;">${word}</span> `;
+          });
+          el.target.innerHTML = renderingText.join(' ');
         }
+        this.swapText = wordArray;
+        this.resetCaretPosition();
       },
   },
 }
@@ -144,11 +150,10 @@ export default {
 }
 
 #tag-list {
-  position: absolute;
   background-color: white;
+  border: 1px solid black;
   max-width: 100px;
   min-height: 100px;
-  border: 1px solid;
 }
 
 .tag {
