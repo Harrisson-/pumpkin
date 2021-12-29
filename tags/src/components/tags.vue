@@ -1,7 +1,7 @@
 <template>
   <div class="input-container">
     <h1>{{title}}</h1>
-    <div type="text" id="text" contenteditable="true" @input="message"></div>
+    <div type="text" ref="test" id="text" contenteditable="true" @input="message"></div>
     <div id="tag-list" v-show="tagList.length > 0">
       <div class="tag" v-on:click="selectTag(tag)" v-for="tag in tagList" :key="tag">
           <span>#{{tag}}</span>
@@ -68,31 +68,43 @@ export default {
         // parse text and replace by tag
         this.$el.querySelector('#text').innerHTML = text;
         this.cleanTagList();
-        this.putCaretAtEnd();
-      },
-      putCaretAtEnd() {
-        // go to next node child
-        const el = this.$el.childNodes[1];
-        const range = document.createRange();
-        const sel = window.getSelection();
-
-        range.setStartAfter(el.lastChild);
-        range.collapse(true);
-        
-        sel.removeAllRanges();
-        sel.addRange(range);
+        this.resetCaretPosition();
       },
       resetCaretPosition() {
-        // go to next node child
-        const el = this.$el.childNodes[1];
+        let diffWord = 0;
+        let selectedNode;
         const range = document.createRange();
         const sel = window.getSelection();
 
-        range.setStartAfter(el.lastChild, el.lastChild.length);
+        for (let node of this.$refs.test.childNodes.values()) {
+            if (diffWord + node.textContent.length >= this.currentCaretPosition) {
+            diffWord = this.currentCaretPosition - diffWord;
+            selectedNode = node;
+            break;
+          }
+          diffWord += node.textContent.length;
+        }
+        // const selectedNode = this.$refs.test.childNodes.forEach((node, index) => {
+        //   if (diffWord + node.textContent.length >= this.currentCaretPosition) {
+        //     diffWord = this.currentCaretPosition - diffWord;
+        //     nodeIndex = index;
+
+        //   }
+        //   diffWord += node.textContent.length;
+        // });
+        console.log('toto', diffWord)
+        range.setStart(selectedNode, diffWord);
         range.collapse(true);
         
         sel.removeAllRanges();
         sel.addRange(range);
+      },
+      getCaretPosition() {
+        const range = window.getSelection().getRangeAt(0);
+        const preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(this.$refs.test);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        this.currentCaretPosition = preCaretRange.toString().length;
       },
       cleanTagList() {
           this.tagList = [];
@@ -108,6 +120,7 @@ export default {
           return !this.swapText.includes(word);
         })[0];
         if (modifiedWord.includes('#')) {
+          this.getCaretPosition();
           const searchText = modifiedWord.slice(modifiedWord.indexOf('#') + 1, modifiedWord.length);
           if (searchText.length > 0) {
             this.tagList = this.givenList.filter((elem) => elem.includes(searchText));
@@ -124,9 +137,9 @@ export default {
             return `<span style="color:deepskyblue;">${word}</span> `;
           });
           el.target.innerHTML = renderingText.join(' ');
+          this.resetCaretPosition();
         }
         this.swapText = wordArray;
-        this.resetCaretPosition();
       },
   },
 }
