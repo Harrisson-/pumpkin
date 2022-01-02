@@ -60,19 +60,24 @@ export default {
           ],
       };
   },
+  renderTriggered(_event) {
+    window.setTimeout(function() {
+      this.resetCaretPosition();
+    }, 0);
+  },
   methods: {
       selectTag(tag) {
         let text = this.$el.querySelector('#text').innerHTML;
         const hastageLastPoition = text.lastIndexOf('#');
         text = text.slice(0, hastageLastPoition) + `<span style="color:deepskyblue;">#${tag}</span> `;
-        // parse text and replace by tag
         this.$el.querySelector('#text').innerHTML = text;
         this.cleanTagList();
-        this.resetCaretPosition();
+        // this.resetCaretPosition();
       },
       resetCaretPosition() {
         let diffWord = 0;
         let selectedNode;
+        this.$el.querySelector('#text').focus();
         const range = document.createRange();
         const sel = window.getSelection();
 
@@ -84,18 +89,10 @@ export default {
           }
           diffWord += node.textContent.length;
         }
-        // const selectedNode = this.$refs.test.childNodes.forEach((node, index) => {
-        //   if (diffWord + node.textContent.length >= this.currentCaretPosition) {
-        //     diffWord = this.currentCaretPosition - diffWord;
-        //     nodeIndex = index;
-
-        //   }
-        //   diffWord += node.textContent.length;
-        // });
-        console.log('toto', diffWord)
         range.setStart(selectedNode, diffWord);
+        range.setEnd(selectedNode,diffWord);
         range.collapse(true);
-        
+
         sel.removeAllRanges();
         sel.addRange(range);
       },
