@@ -60,7 +60,7 @@ export default {
           ],
       };
   },
-  renderTriggered(_event) {
+  renderTriggered() {
     window.setTimeout(function() {
       this.resetCaretPosition();
     }, 0);
