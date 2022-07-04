@@ -1,5 +1,5 @@
 <script setup>
-import Tags from "./components/tags.vue";
+import Tags from "./components/pumpkin-tags.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 
 const taglist = [
@@ -46,8 +46,8 @@ const searchHashtag = (searchText) => {
   <header></header>
 
   <main>
-    <HelloWorld />
-    <Tags :givenTags="filteredTags" @search-word="searchHashtag" />
+    <HelloWorld msg="hello" />
+    <Tags :given-tags="filteredTags" @search-word="searchHashtag" />
   </main>
 </template>
 
