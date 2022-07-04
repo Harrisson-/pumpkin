@@ -28,7 +28,7 @@
 // change to composition api
 
 export default {
-  name: "Tags",
+  name: "pumpkin-tags",
   emits: ["searchWord"],
   data() {
     return {

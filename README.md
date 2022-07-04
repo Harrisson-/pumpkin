@@ -1,4 +1,4 @@
-# tags
+# Pumpkin
 
 Small VueJs component "contenteditable div" who can correctly handle hashtag.
 
@@ -11,6 +11,7 @@ Goals:
 [] rewrite the component in composition api for vueJs 3
 [] return hastag search text to parent component
 [] update available tag list
+[] use vite config
 
 [] clean project dependencies
 [] create a pure js version to be embeded everywhere
@@ -21,25 +22,30 @@ bonus:
 [] tag list follow caret
 
 
-## Project setup
-```
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
 ```
 
-### Compiles and minifies for production
-```
+### Compile and Minify for Production
+
+```sh
 npm run build
 ```
 
-### Lints and fixes files
-```
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
