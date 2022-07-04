@@ -12,6 +12,7 @@ Goals:
 [] return hastag search text to parent component
 [] update available tag list
 
+[] clean project dependencies
 [] create a pure js version to be embeded everywhere
 [] create a book to display component
 
