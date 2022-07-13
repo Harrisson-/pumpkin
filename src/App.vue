@@ -1,7 +1,6 @@
 <script setup>
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
-import HelloWorld from "./components/HelloWorld.vue";
 
 const taglist = [
   "liver",
@@ -62,7 +61,6 @@ const crumbs = [
   <header></header>
 
   <main>
-    <HelloWorld msg="hello" />
     <Tags :given-tags="filteredTags" @search-word="searchHashtag" />
     <Breadcrumb :crumbs="crumbs" />
   </main>

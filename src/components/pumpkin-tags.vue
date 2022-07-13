@@ -4,7 +4,6 @@
 import { ref, watch } from "vue";
 
 // element DOM
-const root = ref(null);
 const test = ref(null);
 
 const title = "pumpkin tags";
@@ -36,7 +35,7 @@ watch(props.givenTags, (newValue) => {
 });
 
 const selectTag = async (tag) => {
-  let text = root.value.querySelector("#text").innerHTML;
+  let text = test.value.innerHTML;
   const hastageLastPoition = text.lastIndexOf("#");
   if (props.highlight) {
     text =
@@ -45,7 +44,7 @@ const selectTag = async (tag) => {
   } else {
     text = text.slice(0, hastageLastPoition) + `#${tag}`;
   }
-  root.value.querySelector("#text").innerHTML = text;
+  test.value.innerHTML = text;
   cleanTagList();
 
   resetCaretPosition();
@@ -54,7 +53,7 @@ const selectTag = async (tag) => {
 const resetCaretPosition = () => {
   let diffWord = 0;
   let selectedNode;
-  root.value.querySelector("#text").focus();
+  test.value.focus();
   const range = document.createRange();
   const sel = window.getSelection();
 
@@ -95,7 +94,7 @@ const message = (el) => {
   const modifiedWord = wordArray.filter((word) => {
     return !swapText.includes(word);
   })[0];
-  if (modifiedWord.includes("#")) {
+  if (modifiedWord && modifiedWord.includes("#")) {
     getCaretPosition();
     const searchText = modifiedWord.slice(
       modifiedWord.indexOf("#") + 1,
