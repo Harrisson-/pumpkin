@@ -1,4 +1,5 @@
 <script setup>
+import { reactive } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
 
@@ -36,10 +37,11 @@ const taglist = [
   "abdominal",
   "dilatation",
 ];
-let filteredTags = [];
-const searchHashtag = (searchText) => {
-  filteredTags = taglist.filter((elem) => elem.includes(searchText));
-};
+var filteredTags = reactive([]);
+function searchHashtag(searchText) {
+  filteredTags.value = taglist.filter((elem) => elem.includes(searchText));
+  console.log('utut', filteredTags)
+}
 
 const crumbs = [
   {
@@ -61,7 +63,7 @@ const crumbs = [
   <header></header>
 
   <main>
-    <Tags :given-tags="filteredTags" @search-word="searchHashtag" />
+    <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
     <Breadcrumb :crumbs="crumbs" />
   </main>
 </template>

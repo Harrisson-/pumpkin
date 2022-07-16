@@ -1,14 +1,13 @@
 <script setup>
 // eslint-disable-next-line
 // const specialCharactersList = new RegExp(/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/);
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 // element DOM
 const test = ref(null);
 
 const title = "pumpkin tags";
 let swapText = [];
-let tagList = [];
 let currentCaretPosition;
 
 const emit = defineEmits(["searchWord"]);
@@ -26,12 +25,6 @@ const props = defineProps({
     type: String,
     default: "#000",
   },
-});
-
-tagList = JSON.parse(JSON.stringify(props.givenTags));
-
-watch(props.givenTags, (newValue) => {
-  tagList = newValue;
 });
 
 const selectTag = async (tag) => {
@@ -64,7 +57,6 @@ const resetCaretPosition = () => {
       break;
     }
     diffWord += node.textContent.length;
-    console.log("ieie", diffWord);
   }
   range.setStart(selectedNode, diffWord);
   range.setEnd(selectedNode, diffWord);
@@ -81,7 +73,8 @@ const getCaretPosition = () => {
   currentCaretPosition = preCaretRange.toString().length;
 };
 const cleanTagList = () => {
-  tagList = [];
+  // clean the givenTags prop
+  emit("searchWord", null);
 };
 const cleanText = (text) => {
   const newText = text.replaceAll('<span style="color:deepskyblue;">', "");
@@ -142,11 +135,11 @@ const message = (el) => {
       contenteditable="true"
       @input="message"
     ></div>
-    <div id="tag-list" v-show="tagList.length > 0">
+    <div id="tag-list" v-show="props.givenTags && props.givenTags.length > 0">
       <div
         class="tag"
         v-on:click="selectTag(tag)"
-        v-for="tag in tagList"
+        v-for="tag in props.givenTags"
         :key="tag"
       >
         <span>#{{ tag }}</span>
