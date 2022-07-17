@@ -29,6 +29,7 @@ const props = defineProps({
 
 const selectTag = async (tag) => {
   let text = test.value.innerHTML;
+  // need to use current caret position
   const hastageLastPoition = text.lastIndexOf("#");
   if (props.highlight) {
     text =
@@ -52,14 +53,13 @@ const resetCaretPosition = () => {
 
   for (let node of test.value.childNodes.values()) {
     if (diffWord + node.textContent.length >= currentCaretPosition) {
-      diffWord = currentCaretPosition - diffWord;
+      diffWord = Math.abs(currentCaretPosition - node.textContent.length);
       selectedNode = node;
       break;
     }
     diffWord += node.textContent.length;
   }
-  range.setStart(selectedNode, diffWord);
-  range.setEnd(selectedNode, diffWord);
+  range.setStart(selectedNode, currentCaretPosition + diffWord);
   range.collapse(true);
 
   sel.removeAllRanges();
