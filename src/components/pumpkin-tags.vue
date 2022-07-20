@@ -1,12 +1,10 @@
 <script setup>
-// eslint-disable-next-line
-// const specialCharactersList = new RegExp(/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/);
 import { ref } from "vue";
 
+// `<span style="color:deepskyblue;">${tmpTxt}</span> `
 // element DOM
-const test = ref(null);
+const textContainerDom = ref(null);
 
-const title = "pumpkin tags";
 let swapText = [];
 let currentCaretPosition;
 
@@ -16,6 +14,7 @@ const props = defineProps({
   givenTags: {
     type: Array,
     required: true,
+    default: () => [],
   },
   highlight: {
     type: Boolean,
@@ -28,62 +27,50 @@ const props = defineProps({
 });
 
 const selectTag = async (tag) => {
-  let text = test.value.innerHTML;
-  // need to use current caret position
-  const hastageLastPoition = text.lastIndexOf("#");
-  if (props.highlight) {
-    text =
-      text.slice(0, hastageLastPoition) +
-      `<span style="color:${props.highlightColor};">#${tag}</span>`;
-  } else {
-    text = text.slice(0, hastageLastPoition) + `#${tag}`;
-  }
-  test.value.innerHTML = text;
+  let firstPartialText = textContainerDom.value.innerHTML.slice(
+    0,
+    currentCaretPosition
+  );
+  const hastageLastPoition = firstPartialText.lastIndexOf("#");
+  let lastPartialText =
+    textContainerDom.value.innerHTML.slice(currentCaretPosition);
+  let newText =
+    firstPartialText.slice(0, hastageLastPoition) + `#${tag}` + lastPartialText;
+  textContainerDom.value.innerHTML = newText;
   cleanTagList();
 
-  resetCaretPosition();
+  resetCaretPosition(
+    (firstPartialText.slice(0, hastageLastPoition) + `#${tag}`).length
+  );
 };
 
-const resetCaretPosition = () => {
-  let diffWord = 0;
-  let selectedNode;
-  test.value.focus();
+const resetCaretPosition = (position) => {
+  textContainerDom.value.focus();
   const range = document.createRange();
   const sel = window.getSelection();
 
-  for (let node of test.value.childNodes.values()) {
-    if (diffWord + node.textContent.length >= currentCaretPosition) {
-      diffWord = Math.abs(currentCaretPosition - node.textContent.length);
-      selectedNode = node;
-      break;
-    }
-    diffWord += node.textContent.length;
-  }
-  range.setStart(selectedNode, currentCaretPosition + diffWord);
+  range.setStart(textContainerDom.value.firstChild, position);
   range.collapse(true);
 
   sel.removeAllRanges();
   sel.addRange(range);
 };
+
 const getCaretPosition = () => {
   const range = window.getSelection().getRangeAt(0);
   const preCaretRange = range.cloneRange();
-  preCaretRange.selectNodeContents(test.value);
+  preCaretRange.selectNodeContents(textContainerDom.value);
   preCaretRange.setEnd(range.endContainer, range.endOffset);
   currentCaretPosition = preCaretRange.toString().length;
 };
+
 const cleanTagList = () => {
   // clean the givenTags prop
   emit("searchWord", null);
 };
-const cleanText = (text) => {
-  const newText = text.replaceAll('<span style="color:deepskyblue;">', "");
-  return newText.replaceAll("</span> ", "");
-};
 
 const message = (el) => {
-  const currentText = cleanText(el.target.innerHTML);
-  const wordArray = currentText.split(" ");
+  const wordArray = el.target.innerHTML.split(" ");
   const modifiedWord = wordArray.filter((word) => {
     return !swapText.includes(word);
   })[0];
@@ -96,30 +83,6 @@ const message = (el) => {
     if (searchText.length > 0) {
       emit("searchWord", searchText);
     }
-    const renderingText = wordArray.map((word) => {
-      const tmpHashtagPosition = word.indexOf("#");
-      if (tmpHashtagPosition === -1) {
-        return word;
-      }
-      if (tmpHashtagPosition !== 0) {
-        const tmpTxt = word.slice(tmpHashtagPosition, -1);
-        if (props.highlight) {
-          return (
-            word.split(tmpTxt) +
-            `<span style="color:deepskyblue;">${tmpTxt}</span> `
-          );
-        } else {
-          return word.split(tmpTxt) + `${tmpTxt}`;
-        }
-      }
-      if (props.highlight) {
-        return `<span style="color:deepskyblue;">${word}</span>`;
-      } else {
-        return `${word}`;
-      }
-    });
-    el.target.innerHTML = renderingText.join(" ");
-    resetCaretPosition();
   }
   swapText = wordArray;
 };
@@ -127,10 +90,9 @@ const message = (el) => {
 
 <template>
   <div class="input-container">
-    <h1>{{ title }}</h1>
     <div
       type="text"
-      ref="test"
+      ref="textContainerDom"
       id="text"
       contenteditable="true"
       @input="message"
@@ -151,7 +113,7 @@ const message = (el) => {
 <style lang="css" scoped>
 .input-container {
   position: relative;
-  max-width: 500px;
+  width: 100%;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -159,6 +121,7 @@ const message = (el) => {
 
 #text {
   border: 1px solid gray;
+  width: 100%;
   min-height: 200px;
   text-align: left;
   padding: 5px;
@@ -167,12 +130,13 @@ const message = (el) => {
 #tag-list {
   background-color: white;
   border: 1px solid black;
-  max-width: 100px;
+  width: 100%;
   min-height: 100px;
 }
 
 .tag {
   font-weight: bold;
   cursor: pointer;
+  padding: 2px 0px 2px;
 }
 </style>

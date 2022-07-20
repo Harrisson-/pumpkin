@@ -2,6 +2,7 @@
 import { reactive } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
+import intersection from "./components/pumpkin-intersection.vue";
 
 const taglist = [
   "liver",
@@ -40,7 +41,7 @@ const taglist = [
 var filteredTags = reactive([]);
 function searchHashtag(searchText) {
   filteredTags.value = taglist.filter((elem) => elem.includes(searchText));
-  console.log('utut', filteredTags)
+  console.log("utut", filteredTags);
 }
 
 const crumbs = [
@@ -65,6 +66,7 @@ const crumbs = [
   <main>
     <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
     <Breadcrumb :crumbs="crumbs" />
+    <!-- <intersection debug="true"></intersection> -->
   </main>
 </template>
 
