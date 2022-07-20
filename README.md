@@ -42,33 +42,6 @@ To do
 
 summary component who generate a list of anchor based on data send or page rendering
 
-## RoadMap
-
-### goals
-
-- [x] Global : rewrite existing components in composition api for vueJs 3
-- [x] Global : use vite config
-- [x] Global : rename project with final name "pumpkin"
-- [ ] Global : clean project dependencies
-- [ ] Global : create a book (based on vite) to display components
-
-- [ ] Pumpkin-tags : Refacto code to make it easier to read and faster
-- [ ] Pumpkin-tags : handle hastag with custom colors
-- [x] Pumpkin-tags : return hastag search text to parent component
-- [x] Pumpkin-tags : update available tag list
-
-- [ ] Pumpkin-intersection : wrapp intersection api 
-- [ ] Pumpkin-intersection : Emit function when conditions are reached
-- [ ] Pumpkin-intersection : add Debug mode to show percent of osberving element
-
-- [x] Pumpkin-breadcrumb : take an list of object and build a breadcrumb
-
-### bonus
-
-- [ ] create a pure js version to be embeded everywhere
-- [ ] Global : implement custom css class
-- [ ] Pumpkin-tags : tag list follow caret
-
 ## Customize configuration
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
