@@ -27,21 +27,14 @@ const props = defineProps({
 });
 
 const selectTag = async (tag) => {
-  let firstPartialText = textContainerDom.value.innerHTML.slice(
-    0,
-    currentCaretPosition
-  );
-  const hastageLastPoition = firstPartialText.lastIndexOf("#");
-  let lastPartialText =
-    textContainerDom.value.innerHTML.slice(currentCaretPosition);
-  let newText =
-    firstPartialText.slice(0, hastageLastPoition) + `#${tag}` + lastPartialText;
-  textContainerDom.value.innerHTML = newText;
+  let preText = textContainerDom.value.innerHTML.slice(0, currentCaretPosition);
+  let hastagePosition = preText.lastIndexOf("#");
+  let postText = textContainerDom.value.innerHTML.slice(currentCaretPosition);
+  let preHastagText = preText.slice(0, hastagePosition);
+  textContainerDom.value.innerHTML = preHastagText + `#${tag}` + postText;
   cleanTagList();
 
-  resetCaretPosition(
-    (firstPartialText.slice(0, hastageLastPoition) + `#${tag}`).length
-  );
+  resetCaretPosition((preHastagText + `#${tag}`).length);
 };
 
 const resetCaretPosition = (position) => {
@@ -70,9 +63,9 @@ const cleanTagList = () => {
 };
 
 const message = (el) => {
-  const wordArray = el.target.innerHTML.split(" ");
+  const wordArray = el.target.textContent.split(" ");
   const modifiedWord = wordArray.filter((word) => {
-    return !swapText.includes(word);
+    return !swapText.includes(word.trim());
   })[0];
   if (modifiedWord && modifiedWord.includes("#")) {
     getCaretPosition();
@@ -115,8 +108,7 @@ const message = (el) => {
   position: relative;
   width: 100%;
   display: flex;
-  justify-content: center;
-  flex-direction: column;
+  align-items: flex-end;
 }
 
 #text {
@@ -131,7 +123,8 @@ const message = (el) => {
   background-color: white;
   border: 1px solid black;
   width: 100%;
-  min-height: 100px;
+  position: absolute;
+  transform: translate(0px, 100%);
 }
 
 .tag {

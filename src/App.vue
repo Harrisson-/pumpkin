@@ -40,8 +40,11 @@ const taglist = [
 ];
 var filteredTags = reactive([]);
 function searchHashtag(searchText) {
-  filteredTags.value = taglist.filter((elem) => elem.includes(searchText));
-  console.log("utut", filteredTags);
+  if (searchText === null) {
+    filteredTags.value = [];
+  } else {
+    filteredTags.value = taglist.filter((elem) => elem.includes(searchText));
+  }
 }
 
 const crumbs = [
