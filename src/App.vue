@@ -3,6 +3,8 @@ import { reactive } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
 import intersection from "./components/pumpkin-intersection.vue";
+import modal from "./components/pumpkin-modal.vue";
+import banner from "./components/pumpkin-banner.vue";
 
 const taglist = [
   "liver",
@@ -61,6 +63,51 @@ const crumbs = [
     link: "https://www.inrap.fr/chroniques-de-site/recherche",
   },
 ];
+
+const list = [
+  {
+    name: "es",
+  },
+  {
+    name: "z",
+  },
+  {
+    name: "d",
+  },
+  {
+    name: "e",
+  },
+  {
+    name: "bv",
+  },
+  {
+    name: "vv",
+  },
+  {
+    name: "cvb",
+  },
+];
+
+const modalState = reactive({ open: false });
+modalState.content =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada viverra velit auctor porttitor. Mauris ac dictum lectus. Nam blandit consequat venenatis. Proin tempus quam pretium ullamcorper euismod. Donec a ante eu augue ullamcorper pretium. Mauris id nunc posuere, lobortis tellus semper, tincidunt nisi. Nunc in commodo mauris, eget tincidunt turpis. Etiam vitae eros a dolor pretium convallis id et ligula. Aenean et ipsum feugiat dui venenatis finibus sit amet et odio. Vivamus id nunc vitae felis porta mattis. Etiam venenatis, erat vitae venenatis sagittis, erat nunc gravida nunc, facilisis placerat nunc leo laoreet dui. Donec mollis leo non feugiat tempor. Suspendisse vel nulla viverra, facilisis nunc non, sollicitudin ligula.";
+modalState.title = "A good modal title";
+function openModal() {
+  modalState.open = !modalState.open;
+}
+
+function closeModal(modalOpen) {
+  modalState.open = modalOpen;
+}
+
+const bannerState = reactive({ open: false });
+function openBanner() {
+  bannerState.open = !bannerState.open;
+}
+
+function closeBanner(modalOpen) {
+  bannerState.open = modalOpen;
+}
 </script>
 
 <template>
@@ -69,7 +116,29 @@ const crumbs = [
   <main>
     <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
     <Breadcrumb :crumbs="crumbs" />
-    <!-- <intersection debug="true"></intersection> -->
+    <intersection debug="true" target="item">
+      <div id="wrap-list">
+        <ul>
+          <li class="item" v-for="item in list" :key="item.name">
+            {{ item.name }}
+          </li>
+        </ul>
+      </div>
+    </intersection>
+    <button @click="openModal">pumpkin modal</button>
+    <modal
+      :show-modal="modalState.open"
+      @close-modal="closeModal"
+      :overlay="true"
+      :content-title="modalState.title"
+      :content-body="modalState.content"
+    ></modal>
+    <button @click="openBanner">pumpkin banner</button>
+    <banner
+      :content="'toto'"
+      @close-banner="closeBanner"
+      :show-banner="bannerState.open"
+    ></banner>
   </main>
 </template>
 
@@ -87,5 +156,10 @@ a,
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
+}
+
+#wrap-list {
+  height: 60px;
+  overflow-y: scroll;
 }
 </style>

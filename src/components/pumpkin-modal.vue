@@ -1,0 +1,86 @@
+<script setup>
+const emit = defineEmits(["closeModal"]);
+
+const props = defineProps({
+  showModal: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  overlay: {
+    type: Boolean,
+    default: true,
+  },
+  contentBody: {
+    type: String,
+  },
+  contentTitle: {
+    type: String,
+  },
+});
+
+function closeModal() {
+  emit("closeModal", false);
+}
+</script>
+
+<template>
+  <div
+    v-if="props.showModal"
+    :class="{ 'pumpkin-overlay': overlay && props.showModal }"
+    @click.self="closeModal"
+  >
+    <div class="pumpkin-modal">
+      <header class="pumpkin-header">
+        <slot name="header"></slot>
+        <h1>{{ props.contentTitle }}</h1>
+        <button class="pumpkin-close" @click="closeModal">&#10006;</button>
+      </header>
+      <main class="pumpkin-body">
+        <slot name="body"></slot>
+        <p>{{ props.contentBody }}</p>
+      </main>
+      <footer class="pumpkin-footer">
+        <slot name="footer"></slot>
+      </footer>
+    </div>
+  </div>
+</template>
+
+<style lang="css" scoped>
+.pumpkin-modal {
+  padding: 5px;
+  position: fixed;
+  z-index: 999;
+  top: 25%;
+  left: 25%;
+  width: fit-content;
+  border: 1px solid black;
+  background-color: white;
+  border-radius: 5px;
+  max-width: 500px;
+}
+.pumpkin-modal > .pumpkin-header {
+  align-items: start;
+  display: flex;
+}
+
+.pumpkin-modal > .pumpkin-header > .pumpkin-close {
+  margin-left: auto;
+  height: fit-content;
+  border: none;
+  background-color: transparent;
+  font-size: large;
+  cursor: pointer;
+}
+
+.pumpkin-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+</style>
