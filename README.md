@@ -20,8 +20,8 @@ Doing
 A breadCrumb
 
 #### status
-Available
 
+Available
 
 ### pumpkin-intersection
 
@@ -41,6 +41,20 @@ To do
 ### pumpkin-summary
 
 summary component who generate a list of anchor based on data send or page rendering
+
+### pumpkin-modal
+
+Modal
+
+#### status
+Doing
+
+### pumpkin-banner
+
+Banner
+
+#### status
+Doing
 
 ## Customize configuration
 
