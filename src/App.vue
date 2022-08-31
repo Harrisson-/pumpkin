@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
 import intersection from "./components/pumpkin-intersection.vue";
@@ -65,28 +65,46 @@ const crumbs = [
 ];
 
 const list = [
-  {
-    name: "es",
-  },
-  {
-    name: "z",
-  },
-  {
-    name: "d",
-  },
-  {
-    name: "e",
-  },
-  {
-    name: "bv",
-  },
-  {
-    name: "vv",
-  },
-  {
-    name: "cvb",
-  },
+  { name: "liver" },
+  { name: "pain" },
+  { name: "pain" },
+  { name: "right" },
+  { name: "left" },
+  { name: "pancreas" },
+  { name: "kidney" },
+  { name: "brain" },
+  { name: "severe_pain" },
+  { name: "tumour" },
+  { name: "cancer" },
+  { name: "MRI" },
+  { name: "CT" },
+  { name: "male" },
+  { name: "female" },
+  { name: "bone" },
+  { name: "shoulder" },
+  { name: "hip" },
+  { name: "XRAY" },
+  { name: "knee" },
+  { name: "spine" },
+  { name: "head" },
+  { name: "abdomen" },
+  { name: "contrast" },
+  { name: "fragment" },
+  { name: "detached" },
+  { name: "injury" },
+  { name: "torn" },
+  { name: "rotator" },
+  { name: "cuff" },
+  { name: "abdominal" },
+  { name: "dilatation" },
 ];
+
+const intersectionAnimations = ref([
+  //"slideLeft",
+  //"displayLeft",
+  "flipLeft",
+  "brighten",
+]);
 
 const modalState = reactive({ open: false });
 modalState.content =
@@ -116,15 +134,24 @@ function closeBanner(modalOpen) {
   <main>
     <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
     <Breadcrumb :crumbs="crumbs" />
-    <intersection debug="true" target="item">
-      <div id="wrap-list">
-        <ul>
+    <div
+      class="intersection-wrapper"
+      v-for="intersectionAnimation in intersectionAnimations"
+      :key="intersectionAnimation"
+    >
+      <span>{{ intersectionAnimation }}</span>
+      <intersection
+        debug="true"
+        target="item"
+        :transitionName="intersectionAnimation"
+      >
+        <ul id="wrap-list">
           <li class="item" v-for="item in list" :key="item.name">
             {{ item.name }}
           </li>
         </ul>
-      </div>
-    </intersection>
+      </intersection>
+    </div>
     <button @click="openModal">pumpkin modal</button>
     <modal
       :show-modal="modalState.open"
@@ -158,8 +185,13 @@ a,
   transition: 0.4s;
 }
 
-#wrap-list {
-  height: 60px;
-  overflow-y: scroll;
+.intersection-wrapper {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  margin-top: 10px;
 }
 </style>
