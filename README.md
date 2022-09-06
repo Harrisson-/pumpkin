@@ -27,6 +27,10 @@ Available
 
 intersection wrapper component based on https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
+### pumpkin-intersection-solo
+
+intersection wrapper component for singular element based on https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
 
 #### status
 Doing

@@ -3,6 +3,7 @@ import { reactive, ref } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
 import intersection from "./components/pumpkin-intersection.vue";
+import intersectionSolo from "./components/pumpkin-intersection-solo.vue";
 import modal from "./components/pumpkin-modal.vue";
 import banner from "./components/pumpkin-banner.vue";
 
@@ -152,6 +153,20 @@ function closeBanner(modalOpen) {
         </ul>
       </intersection>
     </div>
+    <div class="solo-wrapper">
+      <intersectionSolo
+        target="item"
+        transitionName="flipLeft"
+        v-for="(item, index) in list"
+        :key="item.name"
+        :unique-key="index"
+        :animationDelay="200"
+      >
+        <div class="item-solo">
+          {{ item.name }}
+        </div>
+      </intersectionSolo>
+    </div>
     <button @click="openModal">pumpkin modal</button>
     <modal
       :show-modal="modalState.open"
@@ -193,5 +208,14 @@ a,
 
 .item {
   margin-top: 10px;
+}
+
+.item-solo {
+  margin-top: 10px;
+}
+
+.solo-wrapper {
+  overflow-y: scroll;
+  height: 200px;
 }
 </style>
