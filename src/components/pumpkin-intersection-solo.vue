@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 const animations = {
   // slideLeft: {
@@ -30,6 +30,7 @@ const props = defineProps({
     type: Number,
     default: 1.0,
   },
+  // in millisecond
   animationDelay: {
     type: Number,
     default: 0,
@@ -58,6 +59,7 @@ const props = defineProps({
 });
 
 const interContainerRand = "pumpkin-solo" + props.uniqueKey;
+let isView = ref(false);
 
 onMounted(() => {
   const rootElement = document.querySelector(`.${props.parent}`);
@@ -71,8 +73,6 @@ onMounted(() => {
   };
 
   let callback = (entries, _observer) => {
-    console.log("trigger");
-
     for (const entry of entries) {
       setTimeout(function () {
         entry.target.classList.toggle(
@@ -80,6 +80,7 @@ onMounted(() => {
           entry.isIntersecting
         );
       }, props.animationDelay);
+      isView.value = entry.isIntersecting;
     }
   };
 
@@ -93,12 +94,19 @@ onMounted(() => {
 <template>
   <div :class="interContainerRand">
     <keep-alive>
-      <slot></slot>
+      <div v-if="isView">
+        <slot></slot>
+      </div>
     </keep-alive>
   </div>
 </template>
 
 <style lang="css" scoped>
+div[class^="pumpkin-solo"],
+div[class*="pumpkin-solo"] {
+  min-height: 20px;
+}
+
 /** BUG */
 .display-left {
   overflow: hidden;
