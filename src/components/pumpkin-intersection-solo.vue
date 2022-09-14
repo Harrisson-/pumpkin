@@ -1,25 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-const animations = {
-  // slideLeft: {
-  //   start: "slide-left",
-  //   end: "slide-left-end",
-  // },
-  // displayLeft: {
-  //   start: "display-left",
-  //   end: "display-left-end",
-  // },
-  flipLeft: {
-    start: "flip-left",
-    end: "flip-left-end",
-  },
-  brighten: {
-    start: "brighten",
-    end: "brighten-end",
-  },
-};
-
 const props = defineProps({
   debug: {
     type: Boolean,
@@ -63,8 +44,6 @@ let isView = ref(false);
 
 onMounted(() => {
   const rootElement = document.querySelector(`.${props.parent}`);
-  const selector = document.querySelector(`.${interContainerRand}`);
-  selector.classList.toggle(animations[props.transitionName].start, true);
 
   let options = {
     root: rootElement,
@@ -75,12 +54,8 @@ onMounted(() => {
   let callback = (entries, _observer) => {
     for (const entry of entries) {
       setTimeout(function () {
-        entry.target.classList.toggle(
-          animations[props.transitionName].end,
-          entry.isIntersecting
-        );
+        isView.value = entry.isIntersecting;
       }, props.animationDelay);
-      isView.value = entry.isIntersecting;
     }
   };
 
@@ -94,9 +69,11 @@ onMounted(() => {
 <template>
   <div :class="interContainerRand">
     <keep-alive>
-      <div v-if="isView">
-        <slot></slot>
-      </div>
+      <transition :name="props.transitionName">
+        <div v-if="isView">
+          <slot></slot>
+        </div>
+      </transition>
     </keep-alive>
   </div>
 </template>
@@ -108,42 +85,44 @@ div[class*="pumpkin-solo"] {
 }
 
 /** BUG */
-.display-left {
+.display-left-enter-active,
+.display-left-leave-active {
   overflow: hidden;
   width: 0px;
-  transition: width 1s;
 }
-.display-left-end {
+.display-left-enter-from,
+.display-left-leave-to {
   width: 100%;
 }
 
-/** BUG */
-.slide-left {
+.slide-left-enter-active,
+.slide-left-leave-active {
   margin-left: -99%;
   width: 100%;
-  transition: margin-left 1.5s;
 }
-.slide-left-end {
+.slide-left-enter-from,
+.slide-left-leave-to {
   margin-left: 0%;
 }
 
-.flip-left {
+.flip-left-enter-active,
+.flip-left-leave-active {
   overflow: hidden;
   width: 100%;
   transform: matrix(0.2, 0, 0, 1, 0, 0);
-  transition: transform 1s;
 }
-.flip-left-end {
+.flip-left-enter-from,
+.flip-left-leave-to {
   transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-.brighten {
-  overflow: hidden;
-  width: 100%;
-  opacity: 0;
-  transition: opacity 1s;
+.brighten-enter-active,
+.brighten-leave-active {
+  transition: opacity 0.5s ease;
 }
-.brighten-end {
-  opacity: 1;
+
+.brighten-enter-from,
+.brighten-leave-to {
+  opacity: 0;
 }
 </style>

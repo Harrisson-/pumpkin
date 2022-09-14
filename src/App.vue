@@ -155,12 +155,12 @@ function closeBanner(modalOpen) {
     </div>
     <div class="solo-wrapper">
       <intersectionSolo
-        target="item"
-        transitionName="flipLeft"
+        target="item-solo"
+        transitionName="brighten"
         v-for="(item, index) in list"
         :key="item.name"
         :unique-key="index"
-        :animationDelay="200"
+        :animationDelay="0"
       >
         <div class="item-solo">
           {{ item.name }}
