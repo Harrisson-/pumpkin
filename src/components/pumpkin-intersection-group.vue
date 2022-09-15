@@ -1,5 +1,24 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
+
+// const animations = {
+//   slideLeft: {
+//     start: "slide-left",
+//     end: "slide-left-end",
+//   },
+//   displayLeft: {
+//     start: "display-left",
+//     end: "display-left-end",
+//   },
+//   flipLeft: {
+//     start: "flip-left",
+//     end: "flip-left-end",
+//   },
+//   brighten: {
+//     start: "brighten",
+//     end: "brighten-end",
+//   },
+// };
 
 const props = defineProps({
   debug: {
@@ -11,18 +30,10 @@ const props = defineProps({
     type: Number,
     default: 1.0,
   },
-  // in millisecond
-  animationDelay: {
+  // not available for the moment
+  transitionDelay: {
     type: Number,
-    default: 0,
-  },
-  uniqueKey: {
-    type: Number,
-    required: true,
-  },
-  parent: {
-    type: String,
-    required: true,
+    default: 1,
   },
   transitionName: {
     type: String,
@@ -39,47 +50,49 @@ const props = defineProps({
   },
 });
 
-const interContainerRand = "pumpkin-intersection-solo-" + props.uniqueKey;
-let isView = ref(false);
+const interContainerRand =
+  "pumpkin-intersection-group-" + Math.floor(Math.random() * 100);
 
 let callback = (entries, _observer) => {
-  for (const entry of entries) {
-    setTimeout(function () {
-      isView.value = entry.isIntersecting;
-    }, props.animationDelay);
-  }
+  entries.map((entry) => {
+    entry.target.isView = entry.isIntersecting;
+    console.log("entry", entry);
+  });
 };
 
 onMounted(() => {
   let options = {
-    root: document.querySelector(`.${props.parent}`),
+    root: document.querySelector(`.${interContainerRand}`),
     rootMargin: "0px",
     threshold: props.threshold,
   };
 
   let observer = new IntersectionObserver(callback, options);
 
-  let target = document.querySelector(`.${interContainerRand}`);
-  observer.observe(target);
+  let targets = document.querySelectorAll(
+    `.${interContainerRand} .${props.target}`
+  );
+
+  targets.forEach((target) => {
+    observer.observe(target);
+  });
 });
 </script>
 
 <template>
   <div :class="interContainerRand">
-    <keep-alive>
-      <transition :name="props.transitionName">
-        <div v-if="isView">
-          <slot></slot>
-        </div>
-      </transition>
-    </keep-alive>
+    {{ props.transitionName }}
+    <TransitionGroup :name="props.transitionName">
+      <slot></slot>
+    </TransitionGroup>
   </div>
 </template>
 
 <style lang="css" scoped>
-div[class^="pumpkin-intersection-solo-"],
-div[class*="pumpkin-intersection-solo-"] {
-  min-height: 20px;
+div[class^="pumpkin-intersection-group-"],
+div[class*="pumpkin-intersection-group-"] {
+  overflow-y: scroll;
+  height: 100%;
 }
 
 /** BUG */

@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
-import intersection from "./components/pumpkin-intersection.vue";
+import intersectionGroup from "./components/pumpkin-intersection-group.vue";
 import intersectionSolo from "./components/pumpkin-intersection-solo.vue";
 import modal from "./components/pumpkin-modal.vue";
 import banner from "./components/pumpkin-banner.vue";
@@ -101,9 +101,9 @@ const list = [
 ];
 
 const intersectionAnimations = ref([
-  //"slideLeft",
-  //"displayLeft",
-  "flipLeft",
+  "slide-left",
+  "display-left",
+  "flip-left",
   "brighten",
 ]);
 
@@ -135,13 +135,14 @@ function closeBanner(modalOpen) {
   <main>
     <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
     <Breadcrumb :crumbs="crumbs" />
-    <div
+    <!-- NEED REWORK -->
+    <!-- <div
       class="intersection-wrapper"
       v-for="intersectionAnimation in intersectionAnimations"
       :key="intersectionAnimation"
     >
       <span>{{ intersectionAnimation }}</span>
-      <intersection
+      <intersectionGroup
         debug="true"
         target="item"
         :transitionName="intersectionAnimation"
@@ -151,8 +152,8 @@ function closeBanner(modalOpen) {
             {{ item.name }}
           </li>
         </ul>
-      </intersection>
-    </div>
+      </intersectionGroup>
+    </div> -->
     <div class="solo-wrapper">
       <intersectionSolo
         target="item-solo"
@@ -160,7 +161,7 @@ function closeBanner(modalOpen) {
         v-for="(item, index) in list"
         :key="item.name"
         :unique-key="index"
-        :animationDelay="0"
+        :animationDelay="200"
       >
         <div class="item-solo">
           {{ item.name }}
