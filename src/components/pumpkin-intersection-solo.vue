@@ -116,7 +116,7 @@ div[class*="pumpkin-intersection-solo-"] {
 
 .brighten-enter-active,
 .brighten-leave-active {
-  transition: opacity 0.5s ease;
+  opacity: 0.5s;
 }
 
 .brighten-enter-from,
