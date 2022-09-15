@@ -23,9 +23,11 @@ A breadCrumb
 
 Available
 
-### pumpkin-intersection
+### pumpkin-intersection-group
 
 intersection wrapper component based on https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
+Wrapp directly a group of element and apply intersection observer to them
 
 ### pumpkin-intersection-solo
 
