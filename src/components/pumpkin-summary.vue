@@ -11,10 +11,6 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  parent: {
-    type: String,
-    required: true,
-  },
   customAnimation: {
     type: String,
     default: "bold",
@@ -22,51 +18,72 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  const selectors = document.querySelectorAll(`.${props.headers}`);
+  const rootSummary = document.getElementById("summary-pumpkin");
+  const summary = rootSummary.querySelectorAll(":scope > a");
 
   let options = {
-    root: document.querySelector(`.${props.parent}`),
+    root: null,
     rootMargin: "0px",
     threshold: props.threshold,
   };
 
   let callback = (entries, _observer) => {
     for (const entry of entries) {
-      const headerElement = selectors.find((element) => {
-        return element === entry.target;
-      });
-      if (headerElement) {
-        headerElement.classList.toggle(
-          props.customAnimation,
+      summary.forEach((element) => {
+        if (
+          element.innerHTML === entry.target.innerText &&
           entry.isIntersecting
-        );
-      }
+        ) {
+          element.classList.add("bold-end");
+        } else {
+          element.classList.remove("bold-end");
+        }
+      });
     }
   };
 
   let observer = new IntersectionObserver(callback, options);
 
-  let target = document.querySelector(`.${props.headers}`);
-  observer.observe(target);
+  props.headers.forEach((header) => {
+    observer.observe(document.querySelector(`#${header}`));
+  });
 });
 </script>
 
 <template>
-  <div :class="interContainerRand">
-    <transition :name="props.customAnimation">
-      <slot></slot>
-    </transition>
+  <div id="summary-pumpkin">
+    <a
+      v-for="header in headers"
+      :key="header"
+      v-bind:id="'summary-' + header"
+      :href="'#' + header"
+    >
+      {{ header }}
+    </a>
   </div>
 </template>
 
 <style lang="css" scoped>
-.bold-enter-active,
-.bold-leave-active {
+#summary-pumpkin {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  background: white;
+  top: 10px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#summary-pumpkin > a {
+  text-decoration: none;
+}
+
+.bold-end {
   font-weight: bold;
 }
 
-.bold-enter-from,
-.bold-leave-to {
+.bold-start {
   font-weight: normal;
 }
 </style>

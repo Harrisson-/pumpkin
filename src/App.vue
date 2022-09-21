@@ -2,10 +2,11 @@
 import { reactive, ref } from "vue";
 import Tags from "./components/pumpkin-tags.vue";
 import Breadcrumb from "./components/pumpkin-crumb.vue";
-import intersectionGroup from "./components/pumpkin-intersection-group.vue";
+// import intersectionGroup from "./components/pumpkin-intersection-group.vue";
 import intersectionSolo from "./components/pumpkin-intersection-solo.vue";
 import modal from "./components/pumpkin-modal.vue";
 import banner from "./components/pumpkin-banner.vue";
+import pumpkinSummary from "./components/pumpkin-summary.vue";
 
 const taglist = [
   "liver",
@@ -107,6 +108,8 @@ const intersectionAnimations = ref([
   "brighten",
 ]);
 
+const sections = ["section1", "section2", "section3", "section4"];
+
 const modalState = reactive({ open: false });
 modalState.content =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada viverra velit auctor porttitor. Mauris ac dictum lectus. Nam blandit consequat venenatis. Proin tempus quam pretium ullamcorper euismod. Donec a ante eu augue ullamcorper pretium. Mauris id nunc posuere, lobortis tellus semper, tincidunt nisi. Nunc in commodo mauris, eget tincidunt turpis. Etiam vitae eros a dolor pretium convallis id et ligula. Aenean et ipsum feugiat dui venenatis finibus sit amet et odio. Vivamus id nunc vitae felis porta mattis. Etiam venenatis, erat vitae venenatis sagittis, erat nunc gravida nunc, facilisis placerat nunc leo laoreet dui. Donec mollis leo non feugiat tempor. Suspendisse vel nulla viverra, facilisis nunc non, sollicitudin ligula.";
@@ -182,6 +185,17 @@ function closeBanner(modalOpen) {
       @close-banner="closeBanner"
       :show-banner="bannerState.open"
     ></banner>
+    <pumpkinSummary :headers="sections"></pumpkinSummary>
+    <div class="summary-parent">
+      <div
+        v-for="section in sections"
+        :key="section"
+        class="summary-section"
+        v-bind:id="section"
+      >
+        <h1>{{ section }}</h1>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -192,13 +206,6 @@ function closeBanner(modalOpen) {
   padding: 2rem;
 
   font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
 }
 
 .intersection-wrapper {
@@ -218,5 +225,11 @@ a,
 .solo-wrapper {
   overflow-y: scroll;
   height: 200px;
+}
+
+.summary-section {
+  height: 500px;
+  width: 80%;
+  border: 1px solid black;
 }
 </style>
