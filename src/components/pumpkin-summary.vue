@@ -17,6 +17,8 @@ const props = defineProps({
   },
 });
 
+const summaryMap = new Map();
+
 onMounted(() => {
   const rootSummary = document.getElementById("summary-pumpkin");
   const summary = rootSummary.querySelectorAll(":scope > a");
@@ -29,24 +31,22 @@ onMounted(() => {
 
   let callback = (entries, _observer) => {
     for (const entry of entries) {
-      summary.forEach((element) => {
-        if (
-          element.innerHTML === entry.target.innerText &&
-          entry.isIntersecting
-        ) {
-          element.classList.add("bold-end");
-        } else {
-          element.classList.remove("bold-end");
-        }
-      });
+      const active = summaryMap.get(entry.target.innerText);
+      if (active.innerHTML === entry.target.innerText && entry.isIntersecting) {
+        active.classList.add("bold-end");
+      } else {
+        active.classList.remove("bold-end");
+      }
     }
   };
 
   let observer = new IntersectionObserver(callback, options);
-
-  props.headers.forEach((header) => {
-    observer.observe(document.querySelector(`#${header}`));
-  });
+  for (const summaryEntry of summary.entries()) {
+    summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
+    observer.observe(
+      document.querySelector(`#${props.headers[summaryEntry[0]]}`)
+    );
+  }
 });
 </script>
 
