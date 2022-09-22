@@ -66,6 +66,33 @@ const crumbs = [
   },
 ];
 
+const longCrumbs = [
+  {
+    name: "home",
+    link: "#",
+  },
+  {
+    name: "actualité",
+    link: "#",
+  },
+  {
+    name: "tata",
+    link: "#",
+  },
+  {
+    name: "toto",
+    link: "#",
+  },
+  {
+    name: "titi",
+    link: "#",
+  },
+  {
+    name: "fouilles",
+    link: "#",
+  },
+];
+
 const list = [
   { name: "liver" },
   { name: "pain" },
@@ -137,7 +164,9 @@ function closeBanner(modalOpen) {
 
   <main>
     <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
+    <h1>BreadCrumbs</h1>
     <Breadcrumb :crumbs="crumbs" />
+    <Breadcrumb :crumbs="longCrumbs" />
     <!-- NEED REWORK -->
     <!-- <div
       class="intersection-wrapper"
@@ -165,6 +194,7 @@ function closeBanner(modalOpen) {
         :key="item.name"
         :unique-key="index"
         :animationDelay="200"
+        :parent="'solo-wrapper'"
       >
         <div class="item-solo">
           {{ item.name }}
