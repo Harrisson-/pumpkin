@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
   crumbs: {
@@ -8,12 +8,15 @@ const props = defineProps({
       return rawProps;
     },
   },
+  shrink: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 let crop = ref(false);
 let openDialog = ref(false);
 let startCrumbs, lastCrumb, selectCrumbs;
-let linkDialog;
 
 if (props.crumbs.length > 4) {
   crop.value = true;
@@ -23,18 +26,8 @@ if (props.crumbs.length > 4) {
 }
 
 function showLinks() {
-  // AVOID DIALOG
-  if (!openDialog.value){
-    linkDialog.showModal();
-  } else {
-    linkDialog.close();
-  }
   openDialog.value = !openDialog.value;
 }
-
-onMounted(() => {
-  linkDialog = document.getElementById("linkDialog");
-});
 </script>
 
 <template>
@@ -42,15 +35,15 @@ onMounted(() => {
     <span v-for="startCrumb in startCrumbs" :key="startCrumb">
       <a :href="startCrumb.link"> &middot; {{ startCrumb.name }} </a>
     </span>
-    <span>
-      <a v-on:click="showLinks"> &hellip; </a>
-      <!-- AVOID DIALOG -->
-      <dialog id="linkDialog">
+    <span class="shrink-links">
+      <a v-on:click="showLinks"> &#60; &hellip; &#62; </a>
+      <div v-if="openDialog" class="tooltip-block">
         <span v-for="selectCrumb in selectCrumbs" :key="selectCrumb.name">
-          <a :href="selectCrumb.link">{{ selectCrumb.name }}</a>
+          <a class="tooltip-link" :href="selectCrumb.link">{{
+            selectCrumb.name
+          }}</a>
         </span>
-      </dialog>
-      <!-- AVOID DIALOG -->
+      </div>
     </span>
     <span>
       <a :href="lastCrumb.link"> &middot; {{ lastCrumb.name }} </a>
@@ -64,6 +57,34 @@ onMounted(() => {
 </template>
 
 <style lang="css" scoped>
+.container-crumb {
+  display: flex;
+}
+
+.shrink-links {
+  cursor: pointer;
+}
+
+.tooltip-block {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  border: 1px solid black;
+}
+
+.tooltip-block > span {
+  padding: 5px 5px 0px 5px;
+}
+
+.tooltip-block > span:last-child {
+  padding: 5px;
+}
+
+.tooltip-link {
+  text-decoration: none;
+}
+
 .container-crumb > span > a {
   color: orange;
   text-decoration: none;
