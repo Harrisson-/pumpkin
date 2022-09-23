@@ -20,9 +20,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  // if don't provide, it will use window viewport as parent
   parent: {
     type: String,
-    required: true,
+    default: null,
   },
   transitionName: {
     type: String,
