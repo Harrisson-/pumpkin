@@ -166,7 +166,7 @@ function closeBanner(modalOpen) {
     <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
     <h1>BreadCrumbs</h1>
     <Breadcrumb :crumbs="crumbs" />
-    <Breadcrumb :crumbs="longCrumbs" />
+    <Breadcrumb :crumbs="longCrumbs" :shrink="true" />
     <!-- NEED REWORK -->
     <!-- <div
       class="intersection-wrapper"
