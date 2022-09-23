@@ -17,6 +17,10 @@ const props = defineProps({
   contentTitle: {
     type: String,
   },
+  teleport: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 function closeModal() {
@@ -25,7 +29,7 @@ function closeModal() {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="!props.teleport">
     <div
       v-if="props.showModal"
       :class="{ 'pumpkin-overlay': overlay && props.showModal }"
