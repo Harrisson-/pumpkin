@@ -12,17 +12,23 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  shrink_number: {
+    type: Number,
+    default: 2,
+  },
 });
 
 let crop = ref(false);
 let openDialog = ref(false);
 let startCrumbs, lastCrumb, selectCrumbs;
 
-if (props.crumbs.length > 4) {
+if (props.shrink) {
   crop.value = true;
   lastCrumb = computed(() => props.crumbs.slice(-1)[0]);
-  startCrumbs = computed(() => props.crumbs.slice(0, 2));
-  selectCrumbs = computed(() => props.crumbs.slice(3, -1));
+  startCrumbs = computed(() => props.crumbs.slice(0, props.shrink_number));
+  selectCrumbs = computed(() =>
+    props.crumbs.slice(props.shrink_number + 1, -1)
+  );
 }
 
 function showLinks() {
