@@ -1,6 +1,6 @@
 {
-  "name": "pumpkin",
-  "version": "0.0.0",
+  "name": "pumpkin-vue",
+  "version": "0.1.1",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -18,5 +18,9 @@
     "eslint-plugin-vue": "^9.0.0",
     "prettier": "^2.5.1",
     "vite": "^2.9.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Harrisson-/pumpkin.git"
   }
 }
