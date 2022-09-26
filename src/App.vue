@@ -163,12 +163,16 @@ function closeBanner(modalOpen) {
   <header></header>
 
   <main>
-    <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
-    <h1>BreadCrumbs</h1>
-    <Breadcrumb :crumbs="crumbs" />
-    <Breadcrumb :crumbs="longCrumbs" :shrink="true" />
-    <!-- NEED REWORK -->
-    <!-- <div
+    <div class="left-block">
+      <pumpkinSummary :headers="sections"></pumpkinSummary>
+    </div>
+    <div class="right-block">
+      <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
+      <h1>BreadCrumbs</h1>
+      <Breadcrumb :crumbs="crumbs" />
+      <Breadcrumb :crumbs="longCrumbs" :shrink="true" />
+      <!-- NEED REWORK -->
+      <!-- <div
       class="intersection-wrapper"
       v-for="intersectionAnimation in intersectionAnimations"
       :key="intersectionAnimation"
@@ -186,44 +190,44 @@ function closeBanner(modalOpen) {
         </ul>
       </intersectionGroup>
     </div> -->
-    <div class="solo-wrapper">
-      <intersectionSolo
-        target="item-solo"
-        transitionName="brighten"
-        v-for="(item, index) in list"
-        :key="item.name"
-        :unique-key="index"
-        :animationDelay="200"
-        :parent="'solo-wrapper'"
-      >
-        <div class="item-solo">
-          {{ item.name }}
+      <div class="solo-wrapper">
+        <intersectionSolo
+          target="item-solo"
+          transitionName="brighten"
+          v-for="(item, index) in list"
+          :key="item.name"
+          :unique-key="index"
+          :animationDelay="200"
+          :parent="'solo-wrapper'"
+        >
+          <div class="item-solo">
+            {{ item.name }}
+          </div>
+        </intersectionSolo>
+      </div>
+      <button @click="openModal">pumpkin modal</button>
+      <modal
+        :show-modal="modalState.open"
+        @close-modal="closeModal"
+        :overlay="true"
+        :content-title="modalState.title"
+        :content-body="modalState.content"
+      ></modal>
+      <button @click="openBanner">pumpkin banner</button>
+      <banner
+        :content="'toto'"
+        @close-banner="closeBanner"
+        :show-banner="bannerState.open"
+      ></banner>
+      <div class="summary-parent">
+        <div
+          v-for="section in sections"
+          :key="section"
+          class="summary-section"
+          v-bind:id="section"
+        >
+          <h1>{{ section }}</h1>
         </div>
-      </intersectionSolo>
-    </div>
-    <button @click="openModal">pumpkin modal</button>
-    <modal
-      :show-modal="modalState.open"
-      @close-modal="closeModal"
-      :overlay="true"
-      :content-title="modalState.title"
-      :content-body="modalState.content"
-    ></modal>
-    <button @click="openBanner">pumpkin banner</button>
-    <banner
-      :content="'toto'"
-      @close-banner="closeBanner"
-      :show-banner="bannerState.open"
-    ></banner>
-    <pumpkinSummary :headers="sections"></pumpkinSummary>
-    <div class="summary-parent">
-      <div
-        v-for="section in sections"
-        :key="section"
-        class="summary-section"
-        v-bind:id="section"
-      >
-        <h1>{{ section }}</h1>
       </div>
     </div>
   </main>
@@ -236,6 +240,19 @@ function closeBanner(modalOpen) {
   padding: 2rem;
 
   font-weight: normal;
+}
+
+main {
+  display: flex;
+  flex-align: row;
+}
+
+.left-block {
+  width: 100px;
+}
+
+.right-block {
+  width: 100%;
 }
 
 .intersection-wrapper {
