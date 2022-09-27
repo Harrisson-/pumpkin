@@ -1,5 +1,5 @@
 {
-  "name": "pumpkin-vue",
+  "name": "Harrisson-/pumpkin-vue",
   "version": "0.1.1",
   "scripts": {
     "dev": "vite",
@@ -22,5 +22,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Harrisson-/pumpkin.git"
+  },
+  "publishConfig": {
+    "Harrisson-:registry": "https://npm.pkg.github.com"
   }
 }
