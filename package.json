@@ -1,6 +1,10 @@
 {
   "name": "pumpkin-vue",
   "version": "0.1.1",
+  "main": "dist/pumpkin.es.js",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -18,6 +22,9 @@
     "eslint-plugin-vue": "^9.0.0",
     "prettier": "^2.5.1",
     "vite": "^2.9.12"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.37"
   },
   "repository": {
     "type": "git",
