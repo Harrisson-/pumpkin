@@ -6,16 +6,13 @@ import pumpkinIntersectionSolo from "./src/components/pumpkin-intersection-solo.
 import pumpkinModal from "./src/components/pumpkin-modal.vue";
 import pumpkinStepper from "./src/components/pumpkin-stepper.vue";
 
-const plugin = {
-  install(Vue, options) {
-    Vue.component("pumpkinBanner", pumpkinBanner);
-    Vue.component("pumpkinCrumb", pumpkinCrumb);
-    Vue.component("pumpkinTags", pumpkinTags);
-    Vue.component("pumpkinSummary", pumpkinSummary);
-    Vue.component("pumpkinIntersectionSolo", pumpkinIntersectionSolo);
-    Vue.component("pumpkinModal", pumpkinModal);
-    Vue.component("pumpkinStepper", pumpkinStepper);
-  },
-};
 
-export default plugin;
+export {
+  pumpkinBanner,
+  pumpkinCrumb,
+  pumpkinTags,
+  pumpkinSummary,
+  pumpkinIntersectionSolo,
+  pumpkinModal,
+  pumpkinStepper
+};

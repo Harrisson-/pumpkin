@@ -10,5 +10,11 @@ module.exports = {
   ],
   rules: {
     'vue/script-setup-uses-vars': 1,
-  }
+  },
+  "prettier/prettier": [
+    "error",
+    {
+      "endOfLine": "auto"
+    },
+  ],
 }

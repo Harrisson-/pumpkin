@@ -1,8 +1,12 @@
 import { fileURLToPath, URL } from "url";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+
+const _dirname = typeof __dirname !== 'undefined'
+  ? __dirname
+  : dirname(fileURLToPath(import.meta.url))
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +18,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, "./index.js"),
+      entry: resolve(_dirname, "./index.js"),
       name: "Pumpkin",
       // the proper extensions will be added
       fileName: "pumpkin",

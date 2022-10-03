@@ -1,10 +1,16 @@
 {
   "name": "pumpkin-vue",
   "version": "0.1.1",
-  "main": "dist/pumpkin.es.js",
-  "files": [
-    "dist/*"
-  ],
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/pumpkin.umd.cjs",
+  "module": "./dist/pumpkin.js",
+  "exports": {
+    ".": {
+      "import": "./dist/pumpkin.js",
+      "require": "./dist/pumpkin.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
