@@ -10,7 +10,10 @@ const _dirname = typeof __dirname !== 'undefined'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue({
+    css: true, // Dynamically inject css as a <style> tag
+    compileTemplate: true, // Explicitly convert template to render function
+  })],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

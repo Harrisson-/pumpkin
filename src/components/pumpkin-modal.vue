@@ -65,6 +65,7 @@ function closeModal() {
   background-color: white;
   border-radius: 5px;
   max-width: 500px;
+  transform: translate(-50%, -50%);
 }
 .pumpkin-modal > .pumpkin-header {
   align-items: start;
@@ -81,7 +82,7 @@ function closeModal() {
 }
 
 .pumpkin-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100em;

@@ -3,15 +3,15 @@
   "version": "0.1.1",
   "type": "module",
   "files": ["dist"],
-  "main": "./dist/pumpkin.umd.cjs",
-  "module": "./dist/pumpkin.js",
+  "main": "./index.js",
+  "module": "./index.js",
   "exports": {
     ".": {
       "import": "./dist/pumpkin.js",
       "require": "./dist/pumpkin.umd.cjs"
-    },
-    "./dist/style.css": "./dist/style.css"
+    }
   },
+  "style": "./dist/style.css",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

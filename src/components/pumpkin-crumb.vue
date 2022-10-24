@@ -16,6 +16,10 @@ const props = defineProps({
     type: Number,
     default: 2,
   },
+  color: {
+    type: String,
+    default: "orange",
+  }
 });
 
 let crop = ref(false);
@@ -62,7 +66,7 @@ function showLinks() {
   </div>
 </template>
 
-<style lang="css" scoped>
+<style scoped>
 .container-crumb {
   display: flex;
 }
@@ -92,7 +96,7 @@ function showLinks() {
 }
 
 .container-crumb > span > a {
-  color: orange;
+  color: v-bind('props.color');
   text-decoration: none;
 }
 

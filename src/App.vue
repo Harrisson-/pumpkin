@@ -157,6 +157,15 @@ function openBanner() {
 function closeBanner(modalOpen) {
   bannerState.open = modalOpen;
 }
+
+const bannerSlotState = reactive({ open: false });
+function openBannerSlot() {
+  bannerSlotState.open = !bannerSlotState.open;
+}
+
+function closeBannerSlot(modalOpen) {
+  bannerSlotState.open = modalOpen;
+}
 </script>
 
 <template>
@@ -207,6 +216,7 @@ function closeBanner(modalOpen) {
       </div>
       <button @click="openModal">pumpkin modal</button>
       <modal
+        :teleport="true"
         :show-modal="modalState.open"
         @close-modal="closeModal"
         :overlay="true"
@@ -219,6 +229,15 @@ function closeBanner(modalOpen) {
         @close-banner="closeBanner"
         :show-banner="bannerState.open"
       ></banner>
+      <button @click="openBannerSlot">pumpkin banner with slot</button>
+      <banner
+        @close-banner="closeBannerSlot"
+        :show-banner="bannerSlotState.open"
+      >
+        <template #content>
+          <p>try to use slot for banner</p>
+        </template>
+      </banner>
       <div class="summary-parent">
         <div
           v-for="section in sections"
