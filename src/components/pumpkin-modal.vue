@@ -58,8 +58,8 @@ function closeModal() {
   padding: 5px;
   position: fixed;
   z-index: 999;
-  top: 25%;
-  left: 25%;
+  top: 50%;
+  left: 50%;
   width: fit-content;
   border: 1px solid black;
   background-color: white;
