@@ -5,7 +5,7 @@ const props = defineProps({
   // must be between 0.0 and 1.0 | can be an array
   threshold: {
     type: Number,
-    default: 1.0,
+    default: 0.2,
   },
   headers: {
     type: Array,
@@ -18,6 +18,7 @@ const props = defineProps({
 });
 
 const summaryMap = new Map();
+const domElements = {};
 
 onMounted(() => {
   const rootSummary = document.getElementById("summary-pumpkin");
@@ -30,12 +31,15 @@ onMounted(() => {
   };
 
   let callback = (entries, _observer) => {
-    for (const entry of entries) {
-      const active = summaryMap.get(entry.target.innerText);
-      if (active.innerHTML === entry.target.innerText && entry.isIntersecting) {
-        active.classList.add("bold-end");
-      } else {
-        active.classList.remove("bold-end");
+    // on dom element trigger callback at once
+    const entry = entries[0];
+    const active = summaryMap.get(entry.target.innerText);
+    active.classList.add("bold-end");
+    for (const [key, value] of Object.entries(domElements)) {
+      let summaryElement = summaryMap.get(key);
+      // contains() because classList is a DOMTokenList
+      if (key !== active.innerHTML && summaryElement.classList.contains("bold-end")) {
+        summaryElement.classList.remove("bold-end");
       }
     }
   };
@@ -43,9 +47,8 @@ onMounted(() => {
   let observer = new IntersectionObserver(callback, options);
   for (const summaryEntry of summary.entries()) {
     summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
-    observer.observe(
-      document.querySelector(`#${props.headers[summaryEntry[0]]}`)
-    );
+    domElements[props.headers[summaryEntry[0]]] = document.querySelector(`#${props.headers[summaryEntry[0]]}`);
+    observer.observe(document.querySelector(`#${props.headers[summaryEntry[0]]}`));
   }
 });
 </script>
