@@ -5,12 +5,23 @@ const props = defineProps({
   // must be between 0.0 and 1.0 | can be an array
   threshold: {
     type: Number,
-    default: 0.2,
+    default: 0.5,
   },
   headers: {
     type: Array,
     required: true,
   },
+  // build summary based on DOM Elements
+  autoBuild: {
+    type: Boolean,
+    default: false,
+  },
+  // number of level for autobuild, start from h1
+  level: {
+    type: Number,
+    default: 1,
+  },
+  // futur implementation
   customAnimation: {
     type: String,
     default: "bold",
@@ -31,17 +42,20 @@ onMounted(() => {
   };
 
   let callback = (entries, _observer) => {
-    // on dom element trigger callback at once
-    const entry = entries[0];
-    const active = summaryMap.get(entry.target.innerText);
-    active.classList.add("bold-end");
-    for (const [key, value] of Object.entries(domElements)) {
-      let summaryElement = summaryMap.get(key);
-      // contains() because classList is a DOMTokenList
-      if (key !== active.innerHTML && summaryElement.classList.contains("bold-end")) {
-        summaryElement.classList.remove("bold-end");
+    // Only trigger action when new block intersecting
+    if (entries[0].isIntersecting) {
+      const active = summaryMap.get(entries[0].target.innerText);
+      active.classList.add("bold-end");
+      for (const [key, value] of Object.entries(domElements)) {
+        let summaryElement = summaryMap.get(key);
+        // contains() because classList is a DOMTokenList
+        if (key !== active.innerHTML && summaryElement.classList.contains("bold-end")) {
+          summaryElement.classList.remove("bold-end");
+        }
       }
     }
+    // when block leave intersection put in bold next or prev block based on visibility
+    // compare el.getBoundingClientRect(); to viewport to define most visible element
   };
 
   let observer = new IntersectionObserver(callback, options);
