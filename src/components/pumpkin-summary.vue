@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, computed, ref } from "vue";
 
 const props = defineProps({
   // must be between 0.0 and 1.0 | can be an array
@@ -34,13 +34,15 @@ const props = defineProps({
 
 const summaryMap = new Map();
 const domElements = {};
+let autoBuildResult = ref();
 
 onMounted(() => {
   const rootSummary = document.getElementById("summary-pumpkin");
   const summary = rootSummary.querySelectorAll(":scope > a");
 
   if (props.autoBuild) {
-    autobuild();
+    autoBuildResult.value = autobuild([], 0, document.getElementById(`${props.autoBuildDOMId}`));
+    console.log("eoeo", autoBuildResult.value);
   }
 
   let options = {
@@ -69,51 +71,46 @@ onMounted(() => {
     // value are visible, hidden, prerender, et unloaded.
   };
 
-  let observer = new IntersectionObserver(callback, options);
-  for (const summaryEntry of summary.entries()) {
-    summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
-    domElements[props.headers[summaryEntry[0]]] = document.querySelector(
-      `#${props.headers[summaryEntry[0]]}`
-    );
-    observer.observe(document.querySelector(`#${props.headers[summaryEntry[0]]}`));
-  }
+  // let observer = new IntersectionObserver(callback, options);
+  // for (const summaryEntry of summary.entries()) {
+  //   summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
+  //   domElements[props.headers[summaryEntry[0]]] = document.querySelector(
+  //     `#${props.headers[summaryEntry[0]]}`
+  //   );
+  //   observer.observe(document.querySelector(`#${props.headers[summaryEntry[0]]}`));
+  // }
 });
 
-function autobuild() {
-  const globalParent = document.getElementById(`${props.autoBuildDOMId}`);
-  // nextElementSibling maybe
-
-  const autoBuildResult = recursiveAutoBuild([], 0, globalParent);
-  console.log("kke", autoBuildResult);
-  // recursive selection
-  function recursiveAutoBuild(summary, size, parentElement) {
-    if (size <= props.autoBuildLevel) {
-      let blocs = parentElement.querySelectorAll(`h${size + 1}`);
-      for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
-        let currentParent = blocs[selectorSize].parentElement;
-        summary.push({ [`h${size + 1}`]: blocs[selectorSize].innerText });
-        recursiveAutoBuild(summary, size + 1, currentParent);
-      }
+// recursive selection
+function autobuild(summary, size, parentElement) {
+  if (size <= props.autoBuildLevel) {
+    let blocs = parentElement.querySelectorAll(`h${size + 1}`);
+    for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
+      let currentParent = blocs[selectorSize].parentElement;
+      summary.push({ tag: `h${size + 1}`, text: blocs[selectorSize].innerText });
+      autobuild(summary, size + 1, currentParent);
     }
-    return summary;
   }
+  return summary;
 }
 </script>
 
 <template>
   <div id="summary-pumpkin">
-    <a
-      v-for="header in headers"
-      :key="header"
-      v-bind:id="'summary-' + header"
-      :href="'#' + header"
-    >
-      {{ header }}
-    </a>
     <div v-if="props.autoBuild">
       <a
-        v-for="(key, value) in autoBuildResult"
-        :key="value"
+        v-for="(value, key) in autoBuildResult"
+        :key="key"
+        v-bind:id="'summary-' + value.text"
+        :href="'#' + value.text"
+      >
+        {{ value.text }}
+      </a>
+    </div>
+    <div v-else>
+      <a
+        v-for="header in headers"
+        :key="header"
         v-bind:id="'summary-' + header"
         :href="'#' + header"
       >
@@ -136,8 +133,12 @@ function autobuild() {
   z-index: 1;
 }
 
-#summary-pumpkin > a {
+#summary-pumpkin > div > a {
   text-decoration: none;
+}
+
+#summary-pumpkin > div {
+  display: contents;
 }
 
 .bold-end {
