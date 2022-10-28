@@ -16,10 +16,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  // number of level for autobuild, start from h1
-  level: {
+  // number of level for autobuild, start from h1 to h6
+  autoBuildLevel: {
     type: Number,
-    default: 1,
+    default: 0,
+  },
+  // Parent Id for building summary
+  autoBuildDOMId: {
+    type: String,
   },
   // futur implementation
   customAnimation: {
@@ -34,6 +38,10 @@ const domElements = {};
 onMounted(() => {
   const rootSummary = document.getElementById("summary-pumpkin");
   const summary = rootSummary.querySelectorAll(":scope > a");
+
+  if (props.autoBuild) {
+    autobuild();
+  }
 
   let options = {
     root: null,
@@ -56,15 +64,40 @@ onMounted(() => {
     }
     // when block leave intersection put in bold next or prev block based on visibility
     // compare el.getBoundingClientRect(); to viewport to define most visible element
+
+    // Document.visibilityState => return the visibility state of an element
+    // value are visible, hidden, prerender, et unloaded.
   };
 
   let observer = new IntersectionObserver(callback, options);
   for (const summaryEntry of summary.entries()) {
     summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
-    domElements[props.headers[summaryEntry[0]]] = document.querySelector(`#${props.headers[summaryEntry[0]]}`);
+    domElements[props.headers[summaryEntry[0]]] = document.querySelector(
+      `#${props.headers[summaryEntry[0]]}`
+    );
     observer.observe(document.querySelector(`#${props.headers[summaryEntry[0]]}`));
   }
 });
+
+function autobuild() {
+  const globalParent = document.getElementById(`${props.autoBuildDOMId}`);
+  // nextElementSibling maybe
+
+  const autoBuildResult = recursiveAutoBuild([], 0, globalParent);
+  console.log("kke", autoBuildResult);
+  // recursive selection
+  function recursiveAutoBuild(summary, size, parentElement) {
+    if (size <= props.autoBuildLevel) {
+      let blocs = parentElement.querySelectorAll(`h${size + 1}`);
+      for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
+        let currentParent = blocs[selectorSize].parentElement;
+        summary.push({ [`h${size + 1}`]: blocs[selectorSize].innerText });
+        recursiveAutoBuild(summary, size + 1, currentParent);
+      }
+    }
+    return summary;
+  }
+}
 </script>
 
 <template>
@@ -77,6 +110,16 @@ onMounted(() => {
     >
       {{ header }}
     </a>
+    <div v-if="props.autoBuild">
+      <a
+        v-for="(key, value) in autoBuildResult"
+        :key="value"
+        v-bind:id="'summary-' + header"
+        :href="'#' + header"
+      >
+        {{ header }}
+      </a>
+    </div>
   </div>
 </template>
 

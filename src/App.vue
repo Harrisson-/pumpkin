@@ -173,7 +173,7 @@ function closeBannerSlot(modalOpen) {
 
   <main>
     <div class="left-block">
-      <pumpkinSummary :headers="sections"></pumpkinSummary>
+      <pumpkinSummary :headers="sections" :autoBuild="true" :autoBuildLevel="2" autoBuildDOMId="summary-parent-auto"></pumpkinSummary>
     </div>
     <div class="right-block">
       <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
@@ -238,7 +238,7 @@ function closeBannerSlot(modalOpen) {
           <p>try to use slot for banner</p>
         </template>
       </banner>
-      <div class="summary-parent">
+      <div class="summary-parent" id="summary-parent-auto">
         <div
           v-for="section in sections"
           :key="section"
@@ -246,6 +246,12 @@ function closeBannerSlot(modalOpen) {
           v-bind:id="section"
         >
           <h1>{{ section }}</h1>
+          <div>
+            <h2>title{{Math.ceil(Math.random()*100)}}</h2>
+              <div>
+                <h3>title{{Math.ceil(Math.random()*100)}}</h3>
+              </div>
+          </div>
         </div>
       </div>
     </div>
