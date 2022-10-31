@@ -135,7 +135,28 @@ const intersectionAnimations = ref([
   "brighten",
 ]);
 
-const sections = ["section1", "section2", "section3", "section4"];
+const sections = [
+  {
+    section: "section1",
+    title: "title1",
+    block: "block1",
+  }, 
+  {
+    section: "section2",
+    title: "title2",
+    block: "block2",
+  }, 
+  {
+    section: "section3",
+    title: "title3",
+    block: "block3",
+  }, 
+  {
+    section: "section4",
+    title: "title4",
+    block: "block4",
+  }
+];
 
 const modalState = reactive({ open: false });
 modalState.content =
@@ -241,15 +262,15 @@ function closeBannerSlot(modalOpen) {
       <div class="summary-parent" id="summary-parent-auto">
         <div
           v-for="section in sections"
-          :key="section"
+          :key="section.section"
           class="summary-section"
-          v-bind:id="section"
+          v-bind:id="section.section"
         >
-          <h1>{{ section }}</h1>
-          <div>
-            <h2>title{{Math.ceil(Math.random()*100)}}</h2>
-              <div>
-                <h3>title{{Math.ceil(Math.random()*100)}}</h3>
+          <h1>{{section.section }}</h1>
+          <div v-bind:id="section.title">
+            <h2>{{section.title}}</h2>
+              <div v-bind:id="section.block">
+                <h3>{{section.block}}</h3>
               </div>
           </div>
         </div>
