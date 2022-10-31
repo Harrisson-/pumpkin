@@ -34,15 +34,15 @@ const props = defineProps({
 
 const summaryMap = new Map();
 const domElements = {};
-let autoBuildResult = ref();
+let summary = ref();
 
 onMounted(() => {
   const rootSummary = document.getElementById("summary-pumpkin");
-  const summary = rootSummary.querySelectorAll(":scope > a");
 
   if (props.autoBuild) {
-    autoBuildResult.value = autobuild([], 0, document.getElementById(`${props.autoBuildDOMId}`));
-    console.log("eoeo", autoBuildResult.value);
+    summary.value = autobuild([], 0, document.getElementById(`${props.autoBuildDOMId}`));
+  } else {
+    summary.value = rootSummary.querySelectorAll(":scope > a");
   }
 
   let options = {
@@ -71,14 +71,18 @@ onMounted(() => {
     // value are visible, hidden, prerender, et unloaded.
   };
 
-  // let observer = new IntersectionObserver(callback, options);
-  // for (const summaryEntry of summary.entries()) {
-  //   summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
-  //   domElements[props.headers[summaryEntry[0]]] = document.querySelector(
-  //     `#${props.headers[summaryEntry[0]]}`
-  //   );
-  //   observer.observe(document.querySelector(`#${props.headers[summaryEntry[0]]}`));
-  // }
+  let observer = new IntersectionObserver(callback, options);
+  for (const summaryEntry of summary.value) {
+    if (props.autoBuild) {
+      observer.observe
+    } else {
+      summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
+      domElements[props.headers[summaryEntry[0]]] = document.querySelector(
+        `#${props.headers[summaryEntry[0]]}`
+      );
+      observer.observe(document.querySelector(`#${props.headers[summaryEntry[0]]}`));
+    }
+  }
 });
 
 // recursive selection
@@ -87,6 +91,7 @@ function autobuild(summary, size, parentElement) {
     let blocs = parentElement.querySelectorAll(`h${size + 1}`);
     for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
       let currentParent = blocs[selectorSize].parentElement;
+      // add parent block to facilitate observer build
       summary.push({ tag: `h${size + 1}`, text: blocs[selectorSize].innerText });
       autobuild(summary, size + 1, currentParent);
     }
