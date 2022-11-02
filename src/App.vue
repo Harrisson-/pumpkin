@@ -140,22 +140,22 @@ const sections = [
     section: "section1",
     title: "title1",
     block: "block1",
-  }, 
+  },
   {
     section: "section2",
     title: "title2",
     block: "block2",
-  }, 
+  },
   {
     section: "section3",
     title: "title3",
     block: "block3",
-  }, 
+  },
   {
     section: "section4",
     title: "title4",
     block: "block4",
-  }
+  },
 ];
 
 const modalState = reactive({ open: false });
@@ -194,7 +194,12 @@ function closeBannerSlot(modalOpen) {
 
   <main>
     <div class="left-block">
-      <pumpkinSummary :headers="sections" :autoBuild="true" :autoBuildLevel="2" autoBuildDOMId="summary-parent-auto"></pumpkinSummary>
+      <pumpkinSummary
+        :headers="sections"
+        :autoBuild="true"
+        :autoBuildLevel="2"
+        autoBuildDOMId="summary-parent-auto"
+      ></pumpkinSummary>
     </div>
     <div class="right-block">
       <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
@@ -251,10 +256,7 @@ function closeBannerSlot(modalOpen) {
         :show-banner="bannerState.open"
       ></banner>
       <button @click="openBannerSlot">pumpkin banner with slot</button>
-      <banner
-        @close-banner="closeBannerSlot"
-        :show-banner="bannerSlotState.open"
-      >
+      <banner @close-banner="closeBannerSlot" :show-banner="bannerSlotState.open">
         <template #content>
           <p>try to use slot for banner</p>
         </template>
@@ -266,12 +268,68 @@ function closeBannerSlot(modalOpen) {
           class="summary-section"
           v-bind:id="section.section"
         >
-          <h1>{{section.section }}</h1>
+          <h1>{{ section.section }}</h1>
           <div v-bind:id="section.title">
-            <h2>{{section.title}}</h2>
-              <div v-bind:id="section.block">
-                <h3>{{section.block}}</h3>
-              </div>
+            <p>
+              Donec et lectus sapien. Etiam varius aliquam interdum. Duis quam nisl,
+              sodales sed nunc eu, vestibulum laoreet ex. Sed pellentesque, enim sit amet
+              dapibus sagittis, odio dolor sodales risus, eget scelerisque sapien libero
+              vitae eros. Curabitur semper justo sit amet quam pulvinar, sit amet feugiat
+              metus convallis. Praesent et lobortis ante. Morbi nec eros fringilla,
+              vulputate justo eget, maximus felis. Sed a enim laoreet, ornare odio nec,
+              malesuada felis. Ut quis dapibus massa. Duis eu erat varius, lobortis tellus
+              eget, hendrerit sapien. Maecenas porta ut ex euismod pretium.
+            </p>
+            <h2>{{ section.title }}</h2>
+            <div v-bind:id="section.block">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dignissim
+                quis augue quis pellentesque. Integer sit amet elit turpis. Sed rutrum
+                tortor quis nibh facilisis, vitae accumsan erat fermentum. In ut
+                pellentesque nulla. Nam facilisis molestie aliquet. Ut congue augue risus,
+                sed congue turpis consectetur sed. Curabitur non elit at purus volutpat
+                placerat ac ut eros. Aenean mollis pellentesque auctor. Praesent
+                scelerisque, lacus nec blandit pharetra, orci est aliquam arcu, eget
+                pulvinar nibh elit sed magna. Quisque in sapien a libero finibus consequat
+                vitae ut dolor. Mauris placerat ipsum ut porta accumsan. Integer volutpat
+                arcu vel pretium elementum. Praesent posuere dapibus odio, ut dictum ante
+                sollicitudin sit amet. Nam a mauris at erat accumsan blandit sit amet in
+                libero. Proin interdum tellus tristique ex semper, ac lobortis ex feugiat.
+                Quisque ligula neque, sollicitudin eget ornare in, sagittis ac elit.
+                Aliquam feugiat commodo metus. Ut vel lobortis eros. Duis tellus sem,
+                dapibus quis sagittis et, pharetra sit amet tortor. Quisque nunc tellus,
+                molestie in ante dapibus, accumsan congue ex. Curabitur suscipit aliquet
+                ipsum, ut ullamcorper tortor ullamcorper ac. Nam ac pulvinar augue. Donec
+                tincidunt commodo dolor sed imperdiet. Class aptent taciti sociosqu ad
+                litora torquent per conubia nostra, per inceptos himenaeos. Integer quis
+                maximus risus, sit amet luctus neque. Aenean porta dolor eget ultricies
+                tristique.
+              </p>
+              <h3>{{ section.block }}</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin dignissim
+                quis augue quis pellentesque. Integer sit amet elit turpis. Sed rutrum
+                tortor quis nibh facilisis, vitae accumsan erat fermentum. In ut
+                pellentesque nulla. Nam facilisis molestie aliquet. Ut congue augue risus,
+                sed congue turpis consectetur sed. Curabitur non elit at purus volutpat
+                placerat ac ut eros. Aenean mollis pellentesque auctor. Praesent
+                scelerisque, lacus nec blandit pharetra, orci est aliquam arcu, eget
+                pulvinar nibh elit sed magna. Quisque in sapien a libero finibus consequat
+                vitae ut dolor. Mauris placerat ipsum ut porta accumsan. Integer volutpat
+                arcu vel pretium elementum. Praesent posuere dapibus odio, ut dictum ante
+                sollicitudin sit amet. Nam a mauris at erat accumsan blandit sit amet in
+                libero. Proin interdum tellus tristique ex semper, ac lobortis ex feugiat.
+                Quisque ligula neque, sollicitudin eget ornare in, sagittis ac elit.
+                Aliquam feugiat commodo metus. Ut vel lobortis eros. Duis tellus sem,
+                dapibus quis sagittis et, pharetra sit amet tortor. Quisque nunc tellus,
+                molestie in ante dapibus, accumsan congue ex. Curabitur suscipit aliquet
+                ipsum, ut ullamcorper tortor ullamcorper ac. Nam ac pulvinar augue. Donec
+                tincidunt commodo dolor sed imperdiet. Class aptent taciti sociosqu ad
+                litora torquent per conubia nostra, per inceptos himenaeos. Integer quis
+                maximus risus, sit amet luctus neque. Aenean porta dolor eget ultricies
+                tristique.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -321,7 +379,7 @@ main {
 }
 
 .summary-section {
-  height: 500px;
+  height: auto;
   width: 80%;
   border: 1px solid black;
 }
