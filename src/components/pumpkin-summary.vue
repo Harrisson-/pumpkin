@@ -32,7 +32,7 @@ const props = defineProps({
   },
 });
 
-const summaryMap = new Map();
+const summaryMap = new Set();
 const domElements = {};
 let summary = ref();
 
@@ -54,7 +54,8 @@ onMounted(() => {
   let callback = (entries, _observer) => {
     // Only trigger action when new block intersecting
     if (entries[0].isIntersecting) {
-      const active = summaryMap.get(entries[0].target.innerText);
+      // SummaryMap is a SET, check with has()
+      const active = summaryMap.(entries[0].target.innerText);
       active.classList.add("bold-end");
       for (const [key, value] of Object.entries(domElements)) {
         let summaryElement = summaryMap.get(key);
@@ -74,14 +75,19 @@ onMounted(() => {
   let observer = new IntersectionObserver(callback, options);
   for (const [index, summaryEntry] of summary.value.entries()) {
     if (props.autoBuild) {
-      summaryMap.set(summaryEntry.text, summaryEntry.parent);
+      summaryMap.add({
+        title: summaryEntry.text,
+        titleDOM: "",
+        sectionDOM: summaryEntry.parent,
+      });
       domElements[summaryEntry.text] = summaryEntry.parent;
       observer.observe(summaryEntry.parent);
     } else {
-      summaryMap.set(props.headersId[index], summaryEntry);
-      domElements[props.headersId[index]] = document.querySelector(
-        `#${props.headersId[index]}`
-      );
+      summaryMap.add({
+        titleId: props.headersId[index],
+        titleDOM: summaryEntry,
+        sectionDOM: document.querySelector(`#${props.headersId[index]}`),
+      });
       observer.observe(document.getElementById(`${props.headersId[index]}`));
     }
   }
