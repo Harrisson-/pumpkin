@@ -7,7 +7,7 @@ const props = defineProps({
     type: Number,
     default: 0.5,
   },
-  headers: {
+  headersIdId: {
     type: Array,
     required: true,
   },
@@ -42,7 +42,7 @@ onMounted(() => {
   if (props.autoBuild) {
     summary.value = autobuild([], 0, document.getElementById(`${props.autoBuildDOMId}`));
   } else {
-    summary.value = rootSummary.querySelectorAll(":scope > a");
+    summary.value = rootSummary.querySelectorAll(":scope a");
   }
 
   let options = {
@@ -72,17 +72,17 @@ onMounted(() => {
   };
 
   let observer = new IntersectionObserver(callback, options);
-  for (const summaryEntry of summary.value) {
+  for (const [index, summaryEntry] of summary.value.entries()) {
     if (props.autoBuild) {
       summaryMap.set(summaryEntry.text, summaryEntry.parent);
-
+      domElements[summaryEntry.text] = summaryEntry.parent;
       observer.observe(summaryEntry.parent);
     } else {
-      summaryMap.set(props.headers[summaryEntry[0]], summaryEntry[1]);
-      domElements[props.headers[summaryEntry[0]]] = document.querySelector(
-        `#${props.headers[summaryEntry[0]]}`
+      summaryMap.set(props.headersId[index], summaryEntry);
+      domElements[props.headersId[index]] = document.querySelector(
+        `#${props.headersId[index]}`
       );
-      observer.observe(document.getElementById(`${props.headers[summaryEntry[0]]}`));
+      observer.observe(document.getElementById(`${props.headersId[index]}`));
     }
   }
 });
@@ -121,7 +121,7 @@ function autobuild(summary, size, parentElement) {
     </div>
     <div v-else>
       <a
-        v-for="header in headers"
+        v-for="header in props.headersId"
         :key="header"
         v-bind:id="'summary-' + header"
         :href="'#' + header"
@@ -135,7 +135,7 @@ function autobuild(summary, size, parentElement) {
 <style lang="css" scoped>
 #summary-pumpkin {
   position: fixed;
-  width: 100px;
+  min-width: 100px;
   height: auto;
   background: white;
   top: 10px;
