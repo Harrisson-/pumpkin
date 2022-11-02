@@ -7,7 +7,7 @@ const props = defineProps({
     type: Number,
     default: 0.5,
   },
-  headersIdId: {
+  headersId: {
     type: Array,
     required: true,
   },
