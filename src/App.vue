@@ -136,11 +136,12 @@ const intersectionAnimations = ref([
 ]);
 
 const sections = [
-  "section1",
-  "title1",
-  "section2",
-  "title2",
-  "block1"
+  { section: "auto section1", title: "auto title1" },
+  {
+    section: "auto section2",
+    title: "auto title2",
+    block: "auto block1",
+  },
 ];
 
 const modalState = reactive({ open: false });
@@ -179,14 +180,14 @@ function closeBannerSlot(modalOpen) {
 
   <main>
     <div class="left-block">
-      <!-- AUTOBUILD
+      AUTOBUILD
       <pumpkinSummary
         :autoBuild="true"
-        :autoBuildLevel="2"
+        :autoBuildLevel="3"
         autoBuildDOMId="summary-parent-auto"
-      ></pumpkinSummary> -->
-      STANDARD
-      <pumpkinSummary :headersId="sections"></pumpkinSummary>
+      ></pumpkinSummary>
+      <!-- STANDARD
+      <pumpkinSummary :headersId="sections"></pumpkinSummary> -->
     </div>
     <div class="right-block">
       <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
@@ -263,19 +264,17 @@ function closeBannerSlot(modalOpen) {
               sodales sed nunc eu, vestibulum laoreet ex.
             </p>
             <h2>{{ section.title }}</h2>
-            <div v-bind:id="section.block">
-              <p> 
-                Nam ac pulvinar augue. Donec
-                tincidunt commodo dolor sed imperdiet. Class aptent taciti sociosqu ad
-                litora torquent per conubia nostra, per inceptos himenaeos. Integer quis
-                maximus risus, sit amet luctus neque. Aenean porta dolor eget ultricies
-                tristique.
+            <div v-if="section.block" v-bind:id="section.block">
+              <p>
+                Nam ac pulvinar augue. Donec tincidunt commodo dolor sed imperdiet. Class
+                aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
+                himenaeos. Integer quis maximus risus, sit amet luctus neque. Aenean porta
+                dolor eget ultricies tristique.
               </p>
               <h3>{{ section.block }}</h3>
               <p>
-                Integer quis
-                maximus risus, sit amet luctus neque. Aenean porta dolor eget ultricies
-                tristique.
+                Integer quis maximus risus, sit amet luctus neque. Aenean porta dolor eget
+                ultricies tristique.
               </p>
             </div>
           </div>

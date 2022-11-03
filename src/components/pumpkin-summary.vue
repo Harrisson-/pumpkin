@@ -55,7 +55,6 @@ onMounted(() => {
     if (entries[0].isIntersecting) {
       for (const summaryElement of summaryMap) {
         if (summaryElement.sectionDOM === entries[0].target) {
-          console.log('toto');
           summaryElement.titleDOM.classList.add("bold-end");
         } else if (summaryElement.titleDOM.classList.contains("bold-end")) {
           summaryElement.titleDOM.classList.remove("bold-end");
@@ -67,9 +66,12 @@ onMounted(() => {
   let observer = new IntersectionObserver(callback, options);
   for (const [index, summaryEntry] of summary.value.entries()) {
     if (props.autoBuild) {
+      const summaryNode = document.getElementById(summaryEntry.text)
+      // get title from domElement inside summaryNode.childNodes
+      // fix error diff between id and title text
       summaryMap.add({
-        title: summaryEntry.text,
-        titleDOM: "",
+        title: [...summaryNode.childNodes].find(element => element.nodeName === 'H1')?.innerHTML,
+        titleDOM: summaryNode,
         sectionDOM: summaryEntry.parent,
       });
       observer.observe(summaryEntry.parent);
@@ -86,7 +88,7 @@ onMounted(() => {
 
 // recursive selection
 function autobuild(summary, size, parentElement) {
-  if (size <= props.autoBuildLevel) {
+  if (size + 1 <= props.autoBuildLevel) {
     let blocs = parentElement.querySelectorAll(`h${size + 1}`);
     for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
       let currentParent = blocs[selectorSize].parentElement;
