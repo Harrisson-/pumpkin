@@ -33,7 +33,6 @@ const props = defineProps({
 });
 
 const summaryMap = new Set();
-const domElements = {};
 let summary = ref();
 
 onMounted(() => {
@@ -54,22 +53,15 @@ onMounted(() => {
   let callback = (entries, _observer) => {
     // Only trigger action when new block intersecting
     if (entries[0].isIntersecting) {
-      // SummaryMap is a SET, check with has()
-      const active = summaryMap.(entries[0].target.innerText);
-      active.classList.add("bold-end");
-      for (const [key, value] of Object.entries(domElements)) {
-        let summaryElement = summaryMap.get(key);
-        // contains() because classList is a DOMTokenList
-        if (key !== active.innerHTML && summaryElement.classList.contains("bold-end")) {
-          summaryElement.classList.remove("bold-end");
+      for (const summaryElement of summaryMap) {
+        if (summaryElement.sectionDOM === entries[0].target) {
+          console.log('toto');
+          summaryElement.titleDOM.classList.add("bold-end");
+        } else if (summaryElement.titleDOM.classList.contains("bold-end")) {
+          summaryElement.titleDOM.classList.remove("bold-end");
         }
       }
     }
-    // when block leave intersection put in bold next or prev block based on visibility
-    // compare el.getBoundingClientRect(); to viewport to define most visible element
-
-    // Document.visibilityState => return the visibility state of an element
-    // value are visible, hidden, prerender, et unloaded.
   };
 
   let observer = new IntersectionObserver(callback, options);
@@ -80,7 +72,6 @@ onMounted(() => {
         titleDOM: "",
         sectionDOM: summaryEntry.parent,
       });
-      domElements[summaryEntry.text] = summaryEntry.parent;
       observer.observe(summaryEntry.parent);
     } else {
       summaryMap.add({
