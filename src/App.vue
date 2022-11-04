@@ -136,11 +136,11 @@ const intersectionAnimations = ref([
 ]);
 
 const sections = [
-  { section: "auto section1", title: "auto title1" },
+  { section: "section1", title: "title1" },
   {
-    section: "auto section2",
-    title: "auto title2",
-    block: "auto block1",
+    section: "section2",
+    title: "title2",
+    block: "block1",
   },
 ];
 
@@ -255,7 +255,7 @@ function closeBannerSlot(modalOpen) {
           v-for="section in sections"
           :key="section"
           class="summary-section"
-          v-bind:id="section"
+          v-bind:id="section.section"
         >
           <h1>{{ section.section }}</h1>
           <div v-bind:id="section.title">

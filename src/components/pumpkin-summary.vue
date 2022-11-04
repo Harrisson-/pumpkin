@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref } from "vue";
+import { onMounted, computed, ref, nextTick } from "vue";
 
 const props = defineProps({
   // must be between 0.0 and 1.0 | can be an array
@@ -9,9 +9,8 @@ const props = defineProps({
   },
   headersId: {
     type: Array,
-    required: true,
   },
-  // build summary based on DOM Elements
+  // build autoBuildSummary based on DOM Elements
   autoBuild: {
     type: Boolean,
     default: false,
@@ -35,7 +34,7 @@ const props = defineProps({
 const summaryMap = new Set();
 let summary = ref();
 
-onMounted(() => {
+onMounted(async () => {
   const rootSummary = document.getElementById("summary-pumpkin");
 
   if (props.autoBuild) {
@@ -64,17 +63,24 @@ onMounted(() => {
   };
 
   let observer = new IntersectionObserver(callback, options);
+
+  await await nextTick();
+
+  const summaryBlockDOM = rootSummary.querySelectorAll(":scope a");
+
   for (const [index, summaryEntry] of summary.value.entries()) {
     if (props.autoBuild) {
-      const summaryNode = document.getElementById(summaryEntry.text)
-      // get title from domElement inside summaryNode.childNodes
-      // fix error diff between id and title text
+      const partialSummaryBlock = {
+        title: [...summaryEntry.target.childNodes].find(
+          (element) => element.nodeName === summaryEntry.tag.toUpperCase()
+        )?.innerHTML,
+        sectionDOM: summaryEntry.target,
+      }
       summaryMap.add({
-        title: [...summaryNode.childNodes].find(element => element.nodeName === 'H1')?.innerHTML,
-        titleDOM: summaryNode,
-        sectionDOM: summaryEntry.parent,
+        titleDOM: [...summaryBlockDOM].find((title) => title.innerText === partialSummaryBlock.title),
+        ...partialSummaryBlock
       });
-      observer.observe(summaryEntry.parent);
+      observer.observe(summaryEntry.target);
     } else {
       summaryMap.add({
         titleId: props.headersId[index],
@@ -87,21 +93,21 @@ onMounted(() => {
 });
 
 // recursive selection
-function autobuild(summary, size, parentElement) {
-  if (size + 1 <= props.autoBuildLevel) {
-    let blocs = parentElement.querySelectorAll(`h${size + 1}`);
+function autobuild(autoBuildSummary, level, parentElement) {
+  if (level + 1 <= props.autoBuildLevel) {
+    let blocs = parentElement.querySelectorAll(`h${level + 1}`);
     for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
       let currentParent = blocs[selectorSize].parentElement;
-      // add parent block to facilitate observer build
-      summary.push({
-        tag: `h${size + 1}`,
+      autoBuildSummary.push({
+        tag: `h${level + 1}`,
         text: blocs[selectorSize].innerText,
-        parent: currentParent,
+        titleNode: blocs[selectorSize],
+        target: currentParent,
       });
-      autobuild(summary, size + 1, currentParent);
+      autobuild(autoBuildSummary, level + 1, currentParent);
     }
   }
-  return summary;
+  return autoBuildSummary;
 }
 </script>
 
@@ -111,7 +117,7 @@ function autobuild(summary, size, parentElement) {
       <a
         v-for="(value, key) in summary"
         :key="key"
-        v-bind:id="'summary-' + value.text"
+        :id="'summary-' + value.text"
         :class="[`pumpkin-${value.tag}`, 'anchor-style']"
         :href="'#' + value.text"
       >
@@ -136,12 +142,14 @@ function autobuild(summary, size, parentElement) {
   position: fixed;
   min-width: 100px;
   height: auto;
-  background: white;
   top: 10px;
   left: 20px;
   display: flex;
   flex-direction: column;
   z-index: 1;
+
+  background: white;
+  border: 2px solid grey;
 }
 
 #summary-pumpkin > div > a {
