@@ -64,7 +64,7 @@ onMounted(async () => {
 
   let observer = new IntersectionObserver(callback, options);
 
-  await await nextTick();
+  await nextTick();
 
   const summaryBlockDOM = rootSummary.querySelectorAll(":scope a");
 
