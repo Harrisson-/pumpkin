@@ -1,6 +1,6 @@
 # Pumpkin
 
-Simple and easy to use, lib of component for vueJs3 writing with composition API
+Simple and easy to use, lib of component for vue3 writing with composition API
 
 Goal => no Jquery and smallest number of dependencies possible.
 
@@ -23,12 +23,6 @@ A breadCrumb
 
 Available
 
-### pumpkin-intersection-group
-
-intersection wrapper component based on https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-
-Wrapp directly a group of element and apply intersection observer to them
-
 ### pumpkin-intersection-solo
 
 intersection wrapper component for singular element based on https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
@@ -46,7 +40,7 @@ To do
 
 ### pumpkin-summary
 
-summary component who generate a list of anchor based on data send or page rendering
+summary component who generate a summary based on data send or page rendering
 
 ### pumpkin-modal
 
