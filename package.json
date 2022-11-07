@@ -1,5 +1,5 @@
 {
-  "name": "pumpkin-vue",
+  "name": "@Harrisson-/pumpkin-vue",
   "version": "0.1.1",
   "type": "module",
   "files": ["./index.js", "./src/components/"],
@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "exit 0",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
