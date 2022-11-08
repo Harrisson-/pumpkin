@@ -1,8 +1,11 @@
 {
-  "name": "@Harrisson-/pumpkin-vue",
+  "name": "pumpkin-vue",
   "version": "0.1.2",
   "type": "module",
-  "files": ["./index.js", "./src/components/"],
+  "files": [
+    "./index.js",
+    "./src/components/*.vue"
+  ],
   "main": "./index.js",
   "exports": "./index.js",
   "scripts": {
@@ -29,9 +32,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Harrisson-/pumpkin.git"
+    "url": "git+https://github.com/Harrisson-/pumpkin.git"
   },
-  "publishConfig": {
-    "Harrisson-:registry": "https://npm.pkg.github.com"
-  }
+  "description": "Simple and easy to use, lib of component for vue3 writing with composition API",
+  "bugs": {
+    "url": "https://github.com/Harrisson-/pumpkin/issues"
+  },
+  "homepage": "https://github.com/Harrisson-/pumpkin#readme",
+  "keywords": [
+    "vuejs",
+    "vite",
+    "vue3",
+    "vuejs3",
+    "js"
+  ],
+  "author": "Steven Clerc",
+  "license": "ISC"
 }

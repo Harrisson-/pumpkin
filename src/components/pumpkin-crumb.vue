@@ -19,7 +19,7 @@ const props = defineProps({
   color: {
     type: String,
     default: "orange",
-  }
+  },
 });
 
 let crop = ref(false);
@@ -30,9 +30,7 @@ if (props.shrink) {
   crop.value = true;
   lastCrumb = computed(() => props.crumbs.slice(-1)[0]);
   startCrumbs = computed(() => props.crumbs.slice(0, props.shrink_number));
-  selectCrumbs = computed(() =>
-    props.crumbs.slice(props.shrink_number + 1, -1)
-  );
+  selectCrumbs = computed(() => props.crumbs.slice(props.shrink_number + 1, -1));
 }
 
 function showLinks() {
@@ -47,9 +45,16 @@ function showLinks() {
     </span>
     <span class="shrink-links">
       <a v-on:click="showLinks"> &#60; &hellip; &#62; </a>
+      <Teleport to="body">
+        <div
+          v-if="openDialog"
+          :class="{ 'pumpkin-overlay': openDialog }"
+          @click.self="openDialog = false"
+        ></div>
+      </Teleport>
       <div v-if="openDialog" class="tooltip-block">
         <span v-for="selectCrumb in selectCrumbs" :key="selectCrumb.name">
-          <a class="tooltip-link" :href="selectCrumb.link">{{
+          <a class="tooltip-link" :href="selectCrumb.link" @click="openDialog = false">{{
             selectCrumb.name
           }}</a>
         </span>
@@ -81,6 +86,7 @@ function showLinks() {
   flex-direction: column;
   position: absolute;
   border: 1px solid black;
+  z-index: 11;
 }
 
 .tooltip-block > span {
@@ -96,11 +102,21 @@ function showLinks() {
 }
 
 .container-crumb > span > a {
-  color: v-bind('props.color');
+  color: v-bind("props.color");
   text-decoration: none;
 }
 
 .container-crumb > span {
   margin-right: 10px;
+}
+
+.pumpkin-overlay {
+  top: 0;
+  left: 0;
+  width: 100em;
+  height: 100em;
+  background-color: transparent;
+  z-index: 10;
+  position: absolute;
 }
 </style>
