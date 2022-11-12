@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 
 // `<span style="color:deepskyblue;">${tmpTxt}</span> `
 // element DOM
@@ -7,6 +7,7 @@ const textContainerDom = ref(null);
 
 let swapText = [];
 let currentCaretPosition;
+let reactiveTags = reactive({value: props.givenTags});
 
 const emit = defineEmits(["searchWord"]);
 
@@ -67,14 +68,17 @@ const message = (el) => {
   const modifiedWord = wordArray.filter((word) => {
     return !swapText.includes(word.trim());
   })[0];
-  if (modifiedWord && modifiedWord.includes("#")) {
-    getCaretPosition();
+  if (modifiedWord && modifiedWord.length > 0 && modifiedWord.includes("#")) {
     const searchText = modifiedWord.slice(
       modifiedWord.indexOf("#") + 1,
       modifiedWord.length
     );
     if (searchText.length > 0) {
+      getCaretPosition();
       emit("searchWord", searchText);
+      reactiveTags.value = props.givenTags;
+    } else {
+      reactiveTags.value.length = 0;
     }
   }
   swapText = wordArray;
@@ -90,11 +94,11 @@ const message = (el) => {
       contenteditable="true"
       @input="message"
     ></div>
-    <div id="tag-list" v-show="props.givenTags && props.givenTags.length > 0">
+    <div id="tag-list" v-show="reactiveTags.value && reactiveTags.value.length > 0">
       <div
         class="tag"
         v-on:click="selectTag(tag)"
-        v-for="tag in props.givenTags"
+        v-for="tag in reactiveTags.value"
         :key="tag"
       >
         <span>#{{ tag }}</span>

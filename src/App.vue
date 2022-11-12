@@ -180,7 +180,6 @@ function closeBannerSlot(modalOpen) {
 
   <main>
     <div class="left-block">
-      AUTOBUILD
       <pumpkinSummary
         :autoBuild="true"
         :autoBuildLevel="3"

@@ -143,7 +143,7 @@ function autobuild(autoBuildSummary, level, parentElement) {
   min-width: 100px;
   height: auto;
   top: 10px;
-  left: 20px;
+  left: 10px;
   display: flex;
   flex-direction: column;
   z-index: 1;
