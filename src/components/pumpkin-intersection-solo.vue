@@ -33,11 +33,7 @@ const props = defineProps({
         value
       );
     },
-  },
-  target: {
-    type: String,
-    required: true,
-  },
+  }
 });
 
 const interContainerRand = "pumpkin-intersection-solo-" + props.uniqueKey;
