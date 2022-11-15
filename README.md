@@ -7,7 +7,7 @@ Goal => no Jquery and smallest number of dependencies possible.
 ## Project Status
 
 Work in progress.
-Components are almost done, I currently create a documentation for the lib with [Histoire]("https://histoire.dev/")
+Components are almost done, I currently create a documentation for the lib with [Histoire](https://histoire.dev/)
 After I will create the first major release for the lib :balloon:
 
 ## components
@@ -37,6 +37,3 @@ Modal
 ### pumpkin-banner
 
 Banner
-
-#### status
-Doing
