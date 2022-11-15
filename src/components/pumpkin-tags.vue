@@ -25,17 +25,21 @@ const props = defineProps({
     type: String,
     default: "#000",
   },
+  customTag: {
+    type: String,
+    default: '#',
+  }
 });
 
 const selectTag = async (tag) => {
   let preText = textContainerDom.value.innerHTML.slice(0, currentCaretPosition);
-  let hastagePosition = preText.lastIndexOf("#");
+  let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
   let postText = textContainerDom.value.innerHTML.slice(currentCaretPosition);
   let preHastagText = preText.slice(0, hastagePosition);
-  textContainerDom.value.innerHTML = preHastagText + `#${tag}` + postText;
+  textContainerDom.value.innerHTML = preHastagText + `${props.customTag}${tag}` + postText;
   cleanTagList();
 
-  resetCaretPosition((preHastagText + `#${tag}`).length);
+  resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
 };
 
 const resetCaretPosition = (position) => {
@@ -68,9 +72,9 @@ const message = (el) => {
   const modifiedWord = wordArray.filter((word) => {
     return !swapText.includes(word.trim());
   })[0];
-  if (modifiedWord && modifiedWord.length > 0 && modifiedWord.includes("#")) {
+  if (modifiedWord && modifiedWord.length > 0 && modifiedWord.includes(`${props.customTag}`)) {
     const searchText = modifiedWord.slice(
-      modifiedWord.indexOf("#") + 1,
+      modifiedWord.indexOf(`${props.customTag}`) + 1,
       modifiedWord.length
     );
     if (searchText.length > 0) {
@@ -101,7 +105,7 @@ const message = (el) => {
         v-for="tag in reactiveTags.value"
         :key="tag"
       >
-        <span>#{{ tag }}</span>
+        <span>{{props.customTag}}{{ tag }}</span>
       </div>
     </div>
   </div>
