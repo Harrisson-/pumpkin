@@ -7,7 +7,7 @@ const textContainerDom = ref(null);
 
 let swapText = [];
 let currentCaretPosition;
-let reactiveTags = reactive({value: props.givenTags});
+let reactiveTags = reactive({ value: props.givenTags });
 
 const emit = defineEmits(["searchWord"]);
 
@@ -27,8 +27,8 @@ const props = defineProps({
   },
   customTag: {
     type: String,
-    default: '#',
-  }
+    default: "#",
+  },
 });
 
 const selectTag = async (tag) => {
@@ -36,7 +36,8 @@ const selectTag = async (tag) => {
   let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
   let postText = textContainerDom.value.innerHTML.slice(currentCaretPosition);
   let preHastagText = preText.slice(0, hastagePosition);
-  textContainerDom.value.innerHTML = preHastagText + `${props.customTag}${tag}` + postText;
+  textContainerDom.value.innerHTML =
+    preHastagText + `${props.customTag}${tag}` + postText;
   cleanTagList();
 
   resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
@@ -60,6 +61,7 @@ const getCaretPosition = () => {
   preCaretRange.selectNodeContents(textContainerDom.value);
   preCaretRange.setEnd(range.endContainer, range.endOffset);
   currentCaretPosition = preCaretRange.toString().length;
+  console.log('carret position', currentCaretPosition);
 };
 
 const cleanTagList = () => {
@@ -68,24 +70,41 @@ const cleanTagList = () => {
 };
 
 const message = (el) => {
-  const wordArray = el.target.textContent.split(" ");
-  const modifiedWord = wordArray.filter((word) => {
-    return !swapText.includes(word.trim());
-  })[0];
-  if (modifiedWord && modifiedWord.length > 0 && modifiedWord.includes(`${props.customTag}`)) {
-    const searchText = modifiedWord.slice(
-      modifiedWord.indexOf(`${props.customTag}`) + 1,
-      modifiedWord.length
-    );
-    if (searchText.length > 0) {
-      getCaretPosition();
-      emit("searchWord", searchText);
-      reactiveTags.value = props.givenTags;
-    } else {
-      reactiveTags.value.length = 0;
+  // el.target.children => all line are see as <div>
+  // el.target.childNodes.forEach((element) => console.log(element.data || element.innerText ))
+  let stackLineLength = 0;
+
+  getCaretPosition();
+  el.target.childNodes.forEach((element, index, array) => {
+    const lineContent = element.data || element.textContent;
+    stackLineLength += lineContent.length;
+      console.log("ee", lineContent.length);
+      console.log("tutu", stackLineLength);
+    if (stackLineLength >= currentCaretPosition) {
+      const wordArray = lineContent.split(" ");
+      const modifiedWord = wordArray.filter((word) => {
+        return !swapText.includes(word.trim());
+      })[0];
+      if (
+        modifiedWord &&
+        modifiedWord.length > 0 &&
+        modifiedWord.includes(`${props.customTag}`)
+      ) {
+        const searchText = modifiedWord.slice(
+          modifiedWord.indexOf(`${props.customTag}`) + 1,
+          modifiedWord.length
+        );
+        if (searchText.length > 0) {
+          emit("searchWord", searchText);
+          reactiveTags.value = props.givenTags;
+        } else {
+          reactiveTags.value.length = 0;
+        }
+      }
+      swapText = wordArray;
     }
-  }
-  swapText = wordArray;
+    // stackLineLength++; // handle cariot return
+  });
 };
 </script>
 
@@ -105,7 +124,7 @@ const message = (el) => {
         v-for="tag in reactiveTags.value"
         :key="tag"
       >
-        <span>{{props.customTag}}{{ tag }}</span>
+        <span>{{ props.customTag }}{{ tag }}</span>
       </div>
     </div>
   </div>
