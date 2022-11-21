@@ -61,7 +61,7 @@ const getCaretPosition = () => {
   preCaretRange.selectNodeContents(textContainerDom.value);
   preCaretRange.setEnd(range.endContainer, range.endOffset);
   currentCaretPosition = preCaretRange.toString().length;
-  console.log('carret position', currentCaretPosition);
+  console.log("carret position", currentCaretPosition);
 };
 
 const cleanTagList = () => {
@@ -73,36 +73,52 @@ const message = (el) => {
   // el.target.children => all line are see as <div>
   // el.target.childNodes.forEach((element) => console.log(element.data || element.innerText ))
   let stackLineLength = 0;
+  const MetaText = {};
 
   getCaretPosition();
+
   el.target.childNodes.forEach((element, index, array) => {
     const lineContent = element.data || element.textContent;
-    stackLineLength += lineContent.length;
-      console.log("ee", lineContent.length);
-      console.log("tutu", stackLineLength);
-    if (stackLineLength >= currentCaretPosition) {
-      const wordArray = lineContent.split(" ");
-      const modifiedWord = wordArray.filter((word) => {
-        return !swapText.includes(word.trim());
-      })[0];
-      if (
-        modifiedWord &&
-        modifiedWord.length > 0 &&
-        modifiedWord.includes(`${props.customTag}`)
-      ) {
-        const searchText = modifiedWord.slice(
-          modifiedWord.indexOf(`${props.customTag}`) + 1,
-          modifiedWord.length
-        );
-        if (searchText.length > 0) {
-          emit("searchWord", searchText);
+    MetaText[index] = { words: lineContent.split(" "), length: lineContent.length };
+
+    if (stackLineLength + MetaText[index].length >= currentCaretPosition) {
+      const line = lineContent.slice(0, currentCaretPosition - stackLineLength)
+      const words = line.split(/[ ]/);
+      const tagPosition2 = words[words.length - 1].search(props.customTag)
+      if (tagPosition2 !== -1) {
+        const targetText = words[words.length - 1].substring(tagPosition2 + 1, words[words.length - 1].length)
+        if (targetText && targetText.length > 0) {
+          emit("searchWord", targetText);
           reactiveTags.value = props.givenTags;
         } else {
           reactiveTags.value.length = 0;
         }
       }
-      swapText = wordArray;
+      // const modifiedWord = MetaText[index].words.filter((word) => {
+      //   return !swapText.includes(word.trim());
+      // })[0];
+      // if (
+      //   modifiedWord &&
+      //   modifiedWord.length > 0 &&
+      //   modifiedWord.includes(`${props.customTag}`)
+      // ) {
+      //   const tagPosition = modifiedWord.indexOf(`${props.customTag}`) + 1;
+      //   const searchText = modifiedWord.slice(
+      //     tagPosition,
+      //     currentCaretPosition - stackLineLength //modifiedWord.length
+      //   );
+      //   if (searchText.length > 0) {
+      //     emit("searchWord", searchText);
+      //     reactiveTags.value = props.givenTags;
+      //   } else {
+      //     reactiveTags.value.length = 0;
+      //   }
+      // }
+      // swapText = wordArray;
+    } else {
+      stackLineLength += MetaText[index].length;
     }
+    console.log('metaText', MetaText);
     // stackLineLength++; // handle cariot return
   });
 };
