@@ -34,20 +34,22 @@ const props = defineProps({
 });
 
 const selectTag = async (tag) => {
-  const lineContent =
+  let lineContent = 
     textContainerDom.value.childNodes[shareIndex].data ||
     textContainerDom.value.childNodes[shareIndex].textContent;
 
   let preText = lineContent.slice(0, currentCaretPosition - shareStackLineLength);
   let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
-  let postText = lineContent.slice(currentCaretPosition  - shareStackLineLength);
+  let postText = lineContent.slice(currentCaretPosition - shareStackLineLength);
   let preHastagText = preText.slice(0, hastagePosition);
-  textContainerDom.value.childNodes[shareIndex].innerText =
+
+  textContainerDom.value.childNodes[shareIndex].textContent =
     preHastagText + `${props.customTag}${tag}` + postText;
   cleanTagList();
 
+  await nextTick();
   resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
-  stackLineLength = 0;
+  shareStackLineLength = 0;
   shareIndex = 0;
 };
 
@@ -55,8 +57,10 @@ const resetCaretPosition = (position) => {
   textContainerDom.value.focus();
   const range = document.createRange();
   const sel = window.getSelection();
-
-  range.setStart(textContainerDom.value.firstChild, position);
+  const childNode =
+    textContainerDom.value.childNodes[shareIndex].firstChild ||
+    textContainerDom.value.childNodes[shareIndex];
+  range.setStart(childNode, position);
   range.collapse(true);
 
   sel.removeAllRanges();
@@ -74,6 +78,7 @@ const getCaretPosition = () => {
 const cleanTagList = () => {
   // clean the givenTags prop
   emit("searchWord", null);
+  reactiveTags.value.length = 0;
 };
 
 const message = (el) => {
