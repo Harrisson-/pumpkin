@@ -1,8 +1,6 @@
 <script setup>
 import { ref, reactive, nextTick } from "vue";
 
-// `<span style="color:deepskyblue;">${tmpTxt}</span> `
-// element DOM
 const textContainerDom = ref(null);
 
 let swapText = [];
@@ -76,7 +74,6 @@ const getCaretPosition = () => {
 };
 
 const cleanTagList = () => {
-  // clean the givenTags prop
   emit("searchWord", null);
   reactiveTags.value.length = 0;
 };
