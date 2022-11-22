@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, nextTick } from "vue";
 
 // `<span style="color:deepskyblue;">${tmpTxt}</span> `
 // element DOM
@@ -7,6 +7,8 @@ const textContainerDom = ref(null);
 
 let swapText = [];
 let currentCaretPosition;
+let shareIndex = 0;
+let shareStackLineLength = 0;
 let reactiveTags = reactive({ value: props.givenTags });
 
 const emit = defineEmits(["searchWord"]);
@@ -32,15 +34,21 @@ const props = defineProps({
 });
 
 const selectTag = async (tag) => {
-  let preText = textContainerDom.value.innerHTML.slice(0, currentCaretPosition);
+  const lineContent =
+    textContainerDom.value.childNodes[shareIndex].data ||
+    textContainerDom.value.childNodes[shareIndex].textContent;
+
+  let preText = lineContent.slice(0, currentCaretPosition - shareStackLineLength);
   let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
-  let postText = textContainerDom.value.innerHTML.slice(currentCaretPosition);
+  let postText = lineContent.slice(currentCaretPosition  - shareStackLineLength);
   let preHastagText = preText.slice(0, hastagePosition);
-  textContainerDom.value.innerHTML =
+  textContainerDom.value.childNodes[shareIndex].innerText =
     preHastagText + `${props.customTag}${tag}` + postText;
   cleanTagList();
 
   resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
+  stackLineLength = 0;
+  shareIndex = 0;
 };
 
 const resetCaretPosition = (position) => {
@@ -61,7 +69,6 @@ const getCaretPosition = () => {
   preCaretRange.selectNodeContents(textContainerDom.value);
   preCaretRange.setEnd(range.endContainer, range.endOffset);
   currentCaretPosition = preCaretRange.toString().length;
-  console.log("carret position", currentCaretPosition);
 };
 
 const cleanTagList = () => {
@@ -70,56 +77,36 @@ const cleanTagList = () => {
 };
 
 const message = (el) => {
-  // el.target.children => all line are see as <div>
-  // el.target.childNodes.forEach((element) => console.log(element.data || element.innerText ))
   let stackLineLength = 0;
-  const MetaText = {};
 
   getCaretPosition();
 
-  el.target.childNodes.forEach((element, index, array) => {
+  el.target.childNodes.forEach(async (element, index, array) => {
     const lineContent = element.data || element.textContent;
-    MetaText[index] = { words: lineContent.split(" "), length: lineContent.length };
 
-    if (stackLineLength + MetaText[index].length >= currentCaretPosition) {
-      const line = lineContent.slice(0, currentCaretPosition - stackLineLength)
-      const words = line.split(/[ ]/);
-      const tagPosition2 = words[words.length - 1].search(props.customTag)
+    if (stackLineLength + lineContent.length >= currentCaretPosition) {
+      const words = lineContent
+        .slice(0, currentCaretPosition - stackLineLength)
+        .split(/[ ]/);
+      const tagPosition2 = words[words.length - 1].search(props.customTag);
       if (tagPosition2 !== -1) {
-        const targetText = words[words.length - 1].substring(tagPosition2 + 1, words[words.length - 1].length)
+        const targetText = words[words.length - 1].substring(
+          tagPosition2 + 1,
+          words[words.length - 1].length
+        );
         if (targetText && targetText.length > 0) {
+          shareIndex = index;
+          shareStackLineLength = stackLineLength;
           emit("searchWord", targetText);
+          await nextTick();
           reactiveTags.value = props.givenTags;
         } else {
           reactiveTags.value.length = 0;
         }
       }
-      // const modifiedWord = MetaText[index].words.filter((word) => {
-      //   return !swapText.includes(word.trim());
-      // })[0];
-      // if (
-      //   modifiedWord &&
-      //   modifiedWord.length > 0 &&
-      //   modifiedWord.includes(`${props.customTag}`)
-      // ) {
-      //   const tagPosition = modifiedWord.indexOf(`${props.customTag}`) + 1;
-      //   const searchText = modifiedWord.slice(
-      //     tagPosition,
-      //     currentCaretPosition - stackLineLength //modifiedWord.length
-      //   );
-      //   if (searchText.length > 0) {
-      //     emit("searchWord", searchText);
-      //     reactiveTags.value = props.givenTags;
-      //   } else {
-      //     reactiveTags.value.length = 0;
-      //   }
-      // }
-      // swapText = wordArray;
     } else {
-      stackLineLength += MetaText[index].length;
+      stackLineLength += lineContent.length;
     }
-    console.log('metaText', MetaText);
-    // stackLineLength++; // handle cariot return
   });
 };
 </script>
