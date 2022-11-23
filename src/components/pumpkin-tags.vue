@@ -3,10 +3,9 @@ import { ref, reactive, nextTick } from "vue";
 
 const textContainerDom = ref(null);
 
-let swapText = [];
 let currentCaretPosition;
 let shareIndex = 0;
-let shareStackLineLength = 0;
+let shareStackLinesLength = 0;
 let reactiveTags = reactive({ value: props.givenTags });
 
 const emit = defineEmits(["searchWord"]);
@@ -32,13 +31,18 @@ const props = defineProps({
 });
 
 const selectTag = async (tag) => {
-  let lineContent = 
+  let lineContent =
     textContainerDom.value.childNodes[shareIndex].data ||
     textContainerDom.value.childNodes[shareIndex].textContent;
 
-  let preText = lineContent.slice(0, currentCaretPosition - shareStackLineLength);
+  let preText = lineContent.slice(
+    0,
+    currentCaretPosition - shareStackLinesLength
+  );
   let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
-  let postText = lineContent.slice(currentCaretPosition - shareStackLineLength);
+  let postText = lineContent.slice(
+    currentCaretPosition - shareStackLinesLength
+  );
   let preHastagText = preText.slice(0, hastagePosition);
 
   textContainerDom.value.childNodes[shareIndex].textContent =
@@ -46,8 +50,9 @@ const selectTag = async (tag) => {
   cleanTagList();
 
   await nextTick();
+
   resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
-  shareStackLineLength = 0;
+  shareStackLinesLength = 0;
   shareIndex = 0;
 };
 
@@ -83,7 +88,7 @@ const message = (el) => {
 
   getCaretPosition();
 
-  el.target.childNodes.forEach(async (element, index, array) => {
+  el.target.childNodes.forEach(async (element, index) => {
     const lineContent = element.data || element.textContent;
 
     if (stackLineLength + lineContent.length >= currentCaretPosition) {
@@ -98,7 +103,7 @@ const message = (el) => {
         );
         if (targetText && targetText.length > 0) {
           shareIndex = index;
-          shareStackLineLength = stackLineLength;
+          shareStackLinesLength = stackLineLength;
           emit("searchWord", targetText);
           await nextTick();
           reactiveTags.value = props.givenTags;
@@ -122,7 +127,7 @@ const message = (el) => {
       contenteditable="true"
       @input="message"
     ></div>
-    <div id="tag-list" v-show="reactiveTags.value && reactiveTags.value.length > 0">
+    <div id="tag-list" v-show="reactiveTags.value.length > 0">
       <div
         class="tag"
         v-on:click="selectTag(tag)"

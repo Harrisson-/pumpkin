@@ -30,7 +30,9 @@ if (props.shrink) {
   crop.value = true;
   lastCrumb = computed(() => props.crumbs.slice(-1)[0]);
   startCrumbs = computed(() => props.crumbs.slice(0, props.shrink_number));
-  selectCrumbs = computed(() => props.crumbs.slice(props.shrink_number + 1, -1));
+  selectCrumbs = computed(() =>
+    props.crumbs.slice(props.shrink_number + 1, -1)
+  );
 }
 
 function showLinks() {
@@ -54,9 +56,12 @@ function showLinks() {
       </Teleport>
       <div v-if="openDialog" class="tooltip-block">
         <span v-for="selectCrumb in selectCrumbs" :key="selectCrumb.name">
-          <a class="tooltip-link" :href="selectCrumb.link" @click="openDialog = false">{{
-            selectCrumb.name
-          }}</a>
+          <a
+            class="tooltip-link"
+            :href="selectCrumb.link"
+            @click="openDialog = false"
+            >{{ selectCrumb.name }}</a
+          >
         </span>
       </div>
     </span>

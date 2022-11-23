@@ -1,5 +1,6 @@
 <script setup>
-const props = defineProps({
+// eslint-disable-next-line
+const _props = defineProps({
   vertical: {
     type: Boolean,
     default: false,

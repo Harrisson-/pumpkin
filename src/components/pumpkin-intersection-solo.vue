@@ -33,7 +33,7 @@ const props = defineProps({
         value
       );
     },
-  }
+  },
 });
 
 const interContainerRand = "pumpkin-intersection-solo-" + props.uniqueKey;

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref, nextTick } from "vue";
+import { onMounted, ref, nextTick } from "vue";
 
 const props = defineProps({
   // must be between 0.0 and 1.0 | can be an array
@@ -38,7 +38,11 @@ onMounted(async () => {
   const rootSummary = document.getElementById("summary-pumpkin");
 
   if (props.autoBuild) {
-    summary.value = autobuild([], 0, document.getElementById(`${props.autoBuildDOMId}`));
+    summary.value = autobuild(
+      [],
+      0,
+      document.getElementById(`${props.autoBuildDOMId}`)
+    );
   } else {
     summary.value = rootSummary.querySelectorAll(":scope a");
   }
@@ -75,10 +79,12 @@ onMounted(async () => {
           (element) => element.nodeName === summaryEntry.tag.toUpperCase()
         )?.innerHTML,
         sectionDOM: summaryEntry.target,
-      }
+      };
       summaryMap.add({
-        titleDOM: [...summaryBlockDOM].find((title) => title.innerText === partialSummaryBlock.title),
-        ...partialSummaryBlock
+        titleDOM: [...summaryBlockDOM].find(
+          (title) => title.innerText === partialSummaryBlock.title
+        ),
+        ...partialSummaryBlock,
       });
       observer.observe(summaryEntry.target);
     } else {
@@ -96,7 +102,11 @@ onMounted(async () => {
 function autobuild(autoBuildSummary, level, parentElement) {
   if (level + 1 <= props.autoBuildLevel) {
     let blocs = parentElement.querySelectorAll(`h${level + 1}`);
-    for (let selectorSize = 0; selectorSize <= blocs.length - 1; selectorSize++) {
+    for (
+      let selectorSize = 0;
+      selectorSize <= blocs.length - 1;
+      selectorSize++
+    ) {
       let currentParent = blocs[selectorSize].parentElement;
       autoBuildSummary.push({
         tag: `h${level + 1}`,
