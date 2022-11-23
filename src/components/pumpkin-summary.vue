@@ -149,7 +149,7 @@ function autobuild(autoBuildSummary, level, parentElement) {
 
 <style lang="css" scoped>
 #summary-pumpkin {
-  position: fixed;
+  position: sticky;
   min-width: 100px;
   height: auto;
   top: 10px;
