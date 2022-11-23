@@ -95,10 +95,10 @@ const message = (el) => {
       const words = lineContent
         .slice(0, currentCaretPosition - stackLineLength)
         .split(/[ ]/);
-      const tagPosition2 = words[words.length - 1].search(props.customTag);
-      if (tagPosition2 !== -1) {
+      const tagPosition = words[words.length - 1].search(props.customTag);
+      if (tagPosition !== -1) {
         const targetText = words[words.length - 1].substring(
-          tagPosition2 + 1,
+          tagPosition + 1,
           words[words.length - 1].length
         );
         if (targetText && targetText.length > 0) {
