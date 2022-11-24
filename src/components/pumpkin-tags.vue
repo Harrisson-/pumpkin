@@ -1,12 +1,20 @@
 <script setup>
-import { ref, reactive, nextTick } from "vue";
+import { ref, computed } from "vue";
 
 const textContainerDom = ref(null);
 
 let currentCaretPosition;
 let shareIndex = 0;
 let shareStackLinesLength = 0;
-let reactiveTags = reactive({ value: props.givenTags });
+
+const reactiveTags = computed({
+  get: () => {
+    return props.givenTags;
+  },
+  set: (searchText) => {
+    emit("searchWord", searchText);
+  },
+});
 
 const emit = defineEmits(["searchWord"]);
 
@@ -47,9 +55,8 @@ const selectTag = async (tag) => {
 
   textContainerDom.value.childNodes[shareIndex].textContent =
     preHastagText + `${props.customTag}${tag}` + postText;
-  cleanTagList();
-
-  await nextTick();
+  // clean tag
+  reactiveTags.value = null;
 
   resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
   shareStackLinesLength = 0;
@@ -78,11 +85,6 @@ const getCaretPosition = () => {
   currentCaretPosition = preCaretRange.toString().length;
 };
 
-const cleanTagList = () => {
-  emit("searchWord", null);
-  reactiveTags.value.length = 0;
-};
-
 const message = (el) => {
   let stackLineLength = 0;
 
@@ -104,11 +106,9 @@ const message = (el) => {
         if (targetText && targetText.length > 0) {
           shareIndex = index;
           shareStackLinesLength = stackLineLength;
-          emit("searchWord", targetText);
-          await nextTick();
-          reactiveTags.value = props.givenTags;
+          reactiveTags.value = targetText;
         } else {
-          reactiveTags.value.length = 0;
+          reactiveTags.value = null;
         }
       }
     } else {
@@ -127,11 +127,11 @@ const message = (el) => {
       contenteditable="true"
       @input="message"
     ></div>
-    <div id="tag-list" v-show="reactiveTags.value.length > 0">
+    <div id="tag-list" v-show="reactiveTags && reactiveTags.length > 0">
       <div
         class="tag"
         v-on:click="selectTag(tag)"
-        v-for="tag in reactiveTags.value"
+        v-for="tag in reactiveTags"
         :key="tag"
       >
         <span>{{ props.customTag }}{{ tag }}</span>
