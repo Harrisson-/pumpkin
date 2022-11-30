@@ -34,20 +34,28 @@ const props = defineProps({
     default: "top",
     required: true,
   },
+  fixed: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 function closeBanner() {
   emit("closeBanner", false);
 }
+
+const pumpkinBannerClasses = {
+  [`${props.position}`]: true,
+  "pumpkin-banner": true,
+  [`${props.animation}`]: true,
+  fixed: props.fixed,
+};
 </script>
 
 <template>
   <Teleport to="body" :disabled="!props.teleport">
     <Transition :name="`${props.animation}`">
-      <div
-        v-if="props.showBanner"
-        :class="[`${props.position}`, 'pumpkin-banner', `${props.animation}`]"
-      >
+      <div v-if="props.showBanner" :class="pumpkinBannerClasses">
         <slot name="content"></slot>
         <h1>{{ props.content }}</h1>
         <button class="pumpkin-close" @click="closeBanner">&#10006;</button>
@@ -58,7 +66,6 @@ function closeBanner() {
 
 <style lang="css" scoped>
 .pumpkin-banner {
-  position: fixed;
   z-index: 999;
   width: 100%;
   border: 1px solid black;
@@ -83,6 +90,10 @@ function closeBanner() {
   bottom: 0%;
   left: 0%;
   right: 0%;
+}
+
+.fixed {
+  position: fixed;
 }
 
 /* TOP */
