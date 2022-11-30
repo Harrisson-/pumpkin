@@ -33,6 +33,47 @@ const props = defineProps({
 
 const summaryMap = new Set();
 let summary = ref();
+let scrollByClick = false;
+
+function transformToBold(domElement) {
+  for (const summaryElement of summaryMap) {
+    if (
+      summaryElement.titleDOM === domElement ||
+      summaryElement.sectionDOM === domElement
+    ) {
+      summaryElement.titleDOM.classList.add("bold-end");
+    } else if (summaryElement.titleDOM.classList.contains("bold-end")) {
+      summaryElement.titleDOM.classList.remove("bold-end");
+    }
+  }
+}
+
+function boldByclick(domElement) {
+  transformToBold(domElement.currentTarget);
+  scrollByClick = true;
+}
+
+// recursive selection
+function autobuild(autoBuildSummary, level, parentElement) {
+  if (level + 1 <= props.autoBuildLevel) {
+    let blocs = parentElement.querySelectorAll(`h${level + 1}`);
+    for (
+      let selectorSize = 0;
+      selectorSize <= blocs.length - 1;
+      selectorSize++
+    ) {
+      let currentParent = blocs[selectorSize].parentElement;
+      autoBuildSummary.push({
+        tag: `h${level + 1}`,
+        text: blocs[selectorSize].innerText,
+        titleNode: blocs[selectorSize],
+        target: currentParent,
+      });
+      autobuild(autoBuildSummary, level + 1, currentParent);
+    }
+  }
+  return autoBuildSummary;
+}
 
 onMounted(async () => {
   const rootSummary = document.getElementById("summary-pumpkin");
@@ -55,15 +96,10 @@ onMounted(async () => {
 
   let callback = (entries, _observer) => {
     // Only trigger action when new block intersecting
-    if (entries[0].isIntersecting) {
-      for (const summaryElement of summaryMap) {
-        if (summaryElement.sectionDOM === entries[0].target) {
-          summaryElement.titleDOM.classList.add("bold-end");
-        } else if (summaryElement.titleDOM.classList.contains("bold-end")) {
-          summaryElement.titleDOM.classList.remove("bold-end");
-        }
-      }
+    if (entries[0].isIntersecting && !scrollByClick) {
+      transformToBold(entries[0].target);
     }
+    scrollByClick = false;
   };
 
   let observer = new IntersectionObserver(callback, options);
@@ -97,28 +133,6 @@ onMounted(async () => {
     }
   }
 });
-
-// recursive selection
-function autobuild(autoBuildSummary, level, parentElement) {
-  if (level + 1 <= props.autoBuildLevel) {
-    let blocs = parentElement.querySelectorAll(`h${level + 1}`);
-    for (
-      let selectorSize = 0;
-      selectorSize <= blocs.length - 1;
-      selectorSize++
-    ) {
-      let currentParent = blocs[selectorSize].parentElement;
-      autoBuildSummary.push({
-        tag: `h${level + 1}`,
-        text: blocs[selectorSize].innerText,
-        titleNode: blocs[selectorSize],
-        target: currentParent,
-      });
-      autobuild(autoBuildSummary, level + 1, currentParent);
-    }
-  }
-  return autoBuildSummary;
-}
 </script>
 
 <template>
@@ -130,6 +144,7 @@ function autobuild(autoBuildSummary, level, parentElement) {
         :id="'summary-' + value.text"
         :class="[`pumpkin-${value.tag}`, 'anchor-style']"
         :href="'#' + value.text"
+        @click="boldByclick"
       >
         {{ value.text }}
       </a>
@@ -140,6 +155,7 @@ function autobuild(autoBuildSummary, level, parentElement) {
         :key="header"
         v-bind:id="'summary-' + header"
         :href="'#' + header"
+        @click="boldByclick"
       >
         {{ header }}
       </a>
