@@ -130,7 +130,7 @@ const message = (el) => {
     <div id="tag-list" v-show="reactiveTags && reactiveTags.length > 0">
       <div
         class="tag"
-        v-on:click="selectTag(tag)"
+        @click="selectTag(tag)"
         v-for="tag in reactiveTags"
         :key="tag"
       >

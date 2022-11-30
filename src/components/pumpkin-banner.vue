@@ -76,7 +76,7 @@ const pumpkinBannerClasses = {
 .pumpkin-banner > .pumpkin-close {
   border: none;
   margin-left: auto;
-  font-size: xxx-large;
+  font-size: large;
   background-color: transparent;
 }
 
@@ -155,13 +155,13 @@ const pumpkinBannerClasses = {
 
 /* LEFT */
 .slide-left-enter-active {
-  animation: slide-left-anim 2s;
+  animation: slide-left-keyframes 2s;
 }
 .slide-left-leave-active {
-  animation: slide-left-anim 2s reverse;
+  animation: slide-left-keyframes 2s reverse;
 }
 
-@keyframes slide-left-anim {
+@keyframes slide-left-keyframes {
   0% {
     transform: translateX(-100%);
     opacity: 0;
