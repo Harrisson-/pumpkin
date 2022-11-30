@@ -158,7 +158,7 @@ function closeModal(modalOpen) {
 
 const bannerState = reactive({ open: false });
 function openBanner() {
-  bannerState.open = !bannerState.open;
+  bannerState.open = true;
 }
 
 function closeBanner(modalOpen) {
@@ -238,12 +238,21 @@ function closeBannerSlot(modalOpen) {
       ></modal>
       <button @click="openBanner">pumpkin banner</button>
       <banner
+        teleport
+        position="top"
+        animation="slide-left"
         :content="'toto'"
         @close-banner="closeBanner"
         :show-banner="bannerState.open"
       ></banner>
       <button @click="openBannerSlot">pumpkin banner with slot</button>
-      <banner @close-banner="closeBannerSlot" :show-banner="bannerSlotState.open">
+      <banner
+        teleport
+        position="bottom"
+        animation="slide-top"
+        @close-banner="closeBannerSlot"
+        :show-banner="bannerSlotState.open"
+      >
         <template #content>
           <p>try to use slot for banner</p>
         </template>
@@ -259,21 +268,22 @@ function closeBannerSlot(modalOpen) {
           <h1>{{ section.section }}</h1>
           <div v-bind:id="section.title">
             <p>
-              Donec et lectus sapien. Etiam varius aliquam interdum. Duis quam nisl,
-              sodales sed nunc eu, vestibulum laoreet ex.
+              Donec et lectus sapien. Etiam varius aliquam interdum. Duis quam
+              nisl, sodales sed nunc eu, vestibulum laoreet ex.
             </p>
             <h2>{{ section.title }}</h2>
             <div v-if="section.block" v-bind:id="section.block">
               <p>
-                Nam ac pulvinar augue. Donec tincidunt commodo dolor sed imperdiet. Class
-                aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
-                himenaeos. Integer quis maximus risus, sit amet luctus neque. Aenean porta
-                dolor eget ultricies tristique.
+                Nam ac pulvinar augue. Donec tincidunt commodo dolor sed
+                imperdiet. Class aptent taciti sociosqu ad litora torquent per
+                conubia nostra, per inceptos himenaeos. Integer quis maximus
+                risus, sit amet luctus neque. Aenean porta dolor eget ultricies
+                tristique.
               </p>
               <h3>{{ section.block }}</h3>
               <p>
-                Integer quis maximus risus, sit amet luctus neque. Aenean porta dolor eget
-                ultricies tristique.
+                Integer quis maximus risus, sit amet luctus neque. Aenean porta
+                dolor eget ultricies tristique.
               </p>
             </div>
           </div>
@@ -286,10 +296,11 @@ function closeBannerSlot(modalOpen) {
           <div id="title1">
             <h2>casquette</h2>
             <p>
-              Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing elit, sed
-              dowo eiusmowod tempowor incididunt ut lawoobowore et dolowore mawoogna
-              aliquawoo. Ut enim awood minim uvueniawoom, quwuis nowostrud exercitawootion
-              ullamcowo lawooboworis nisi ut awooliquip ex ea commowodo consequawoot.
+              Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing
+              elit, sed dowo eiusmowod tempowor incididunt ut lawoobowore et
+              dolowore mawoogna aliquawoo. Ut enim awood minim uvueniawoom,
+              quwuis nowostrud exercitawootion ullamcowo lawooboworis nisi ut
+              awooliquip ex ea commowodo consequawoot.
             </p>
           </div>
         </div>
@@ -298,19 +309,20 @@ function closeBannerSlot(modalOpen) {
           <div id="title2">
             <h2>beautiful</h2>
             <p>
-              Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing elit, sed
-              dowo eiusmowod tempowor incididunt ut lawoobowore et dolowore mawoogna
-              aliquawoo. Ut enim awood minim uvueniawoom, quwuis nowostrud exercitawootion
-              ullamcowo lawooboworis nisi ut awooliquip ex ea commowodo consequawoot.
+              Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing
+              elit, sed dowo eiusmowod tempowor incididunt ut lawoobowore et
+              dolowore mawoogna aliquawoo. Ut enim awood minim uvueniawoom,
+              quwuis nowostrud exercitawootion ullamcowo lawooboworis nisi ut
+              awooliquip ex ea commowodo consequawoot.
             </p>
             <div id="block1">
               <h3>hello world</h3>
               <p>
-                Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing elit, sed
-                dowo eiusmowod tempowor incididunt ut lawoobowore et dolowore mawoogna
-                aliquawoo. Ut enim awood minim uvueniawoom, quwuis nowostrud
-                exercitawootion ullamcowo lawooboworis nisi ut awooliquip ex ea commowodo
-                consequawoot.
+                Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing
+                elit, sed dowo eiusmowod tempowor incididunt ut lawoobowore et
+                dolowore mawoogna aliquawoo. Ut enim awood minim uvueniawoom,
+                quwuis nowostrud exercitawootion ullamcowo lawooboworis nisi ut
+                awooliquip ex ea commowodo consequawoot.
               </p>
             </div>
           </div>
