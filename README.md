@@ -1,14 +1,13 @@
 # Pumpkin
 
-Simple and easy to use, lib of component for vue3 writing with composition API
+Simple and easy to use, lib of component for vue3 writing with composition API.
 
-Goal => no Jquery and smallest number of dependencies possible.
+You only need Vue package to use the lib.
 
 ## Project Status
 
-Work in progress.
-Components are almost done, I currently create a documentation for the lib with [Histoire](https://histoire.dev/)
-After I will create the first major release for the lib :balloon:
+V1 planned for mid december, but all component are usable.
+Currently working on documentation with [Histoire](https://histoire.dev/)
 
 ## components
 
@@ -20,7 +19,7 @@ You can simply search the word with your own api and change the list of availabl
 
 ### pumpkin-crumbs
 
-A simple breadCrumb
+A simple breadCrumb with possibility to shrink link list inside a clickable pop-up
 
 ### pumpkin-intersection-solo
 
@@ -28,12 +27,12 @@ intersection wrapper component for singular element based on https://developer.m
 
 ### pumpkin-summary
 
-summary component who generate a summary based on data send or page rendering
+summary component who generate a summary based on data send or page rendering.
 
 ### pumpkin-modal
 
-Modal
+Simple modal with "content" props or slot.
 
 ### pumpkin-banner
 
-Banner
+Simple banner with "content" props or slot.
