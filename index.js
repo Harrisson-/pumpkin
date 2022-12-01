@@ -4,7 +4,6 @@ import pumpkinTags from "./src/components/pumpkin-tags.vue";
 import pumpkinSummary from "./src/components/pumpkin-summary.vue";
 import pumpkinIntersectionSolo from "./src/components/pumpkin-intersection-solo.vue";
 import pumpkinModal from "./src/components/pumpkin-modal.vue";
-import pumpkinStepper from "./src/components/pumpkin-stepper.vue";
 
 
 export {
@@ -14,5 +13,4 @@ export {
   pumpkinSummary,
   pumpkinIntersectionSolo,
   pumpkinModal,
-  pumpkinStepper
 };
