@@ -1,3 +1,28 @@
+### 0.3.0 (2022-12-05)
+
+##### Chores
+
+* **global:**  move wip component to another folder and remove stepper export ([f9105616](https://github.com/Harrisson-/pumpkin/commit/f910561633fa25b1aaa2e0766aa13eedbd75cc65))
+
+##### New Features
+
+* **summary:**  implement summary bold from click ([330ca44f](https://github.com/Harrisson-/pumpkin/commit/330ca44f13a9ad201aa737d939fd9045b827cac9))
+* **banner:**
+  *  add fixed option ([a1fe65f7](https://github.com/Harrisson-/pumpkin/commit/a1fe65f7fceb569365d05f4b11d0354d28a1a9e1))
+  *  add animations and position ([ffe85769](https://github.com/Harrisson-/pumpkin/commit/ffe8576990c91e0e34d6432f483f290dd9e7c488))
+
+##### Bug Fixes
+
+* **summary:**  simplify standard summary ([2c888f3a](https://github.com/Harrisson-/pumpkin/commit/2c888f3a277e8e885bf17b2f57ca198cf5b984fe))
+
+##### Other Changes
+
+* **readme:**  update readme ([53e37f79](https://github.com/Harrisson-/pumpkin/commit/53e37f79820dd3b63e70470d5db994569f5ca71b))
+
+##### Code Style Changes
+
+* **global:**  unify event syntaxe and css class name ([dd462688](https://github.com/Harrisson-/pumpkin/commit/dd46268807e324485ba9a6910e5df327b5baa88e))
+
 #### 0.1.1 (2022-09-27)
 
 ##### Chores

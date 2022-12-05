@@ -1,6 +1,6 @@
 {
   "name": "pumpkin-vue",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "files": [
     "./index.js",
@@ -13,7 +13,10 @@
     "build": "vite build",
     "test": "exit 0",
     "preview": "vite preview --port 4173",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
+    "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
+    "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags"
   },
   "dependencies": {
     "vue": "^3.2.37"
@@ -24,6 +27,7 @@
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^9.0.0",
+    "generate-changelog": "^1.8.0",
     "prettier": "^2.5.1",
     "vite": "^3.1.4"
   },
