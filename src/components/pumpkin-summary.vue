@@ -7,7 +7,11 @@ const props = defineProps({
     type: Number,
     default: 0.5,
   },
-  headersId: {
+  // property required for headers :
+  //  id: id of the targeted element
+  //  level: level required for the element in the summary
+  //  title: title visible inside the summary
+  headers: {
     type: Array,
   },
   // build autoBuildSummary based on DOM Elements
@@ -85,7 +89,7 @@ onMounted(async () => {
       document.getElementById(`${props.autoBuildDOMId}`)
     );
   } else {
-    summary.value = rootSummary.querySelectorAll(":scope a");
+    summary.value = rootSummary.querySelectorAll(":scope a");;
   }
 
   let options = {
@@ -124,12 +128,13 @@ onMounted(async () => {
       });
       observer.observe(summaryEntry.target);
     } else {
+      const sectionDomById = document.getElementById(`${props.headers[index].id}`);
       summaryMap.add({
-        titleId: props.headersId[index],
+        titleId: props.headers[index].title,
         titleDOM: summaryEntry,
-        sectionDOM: document.querySelector(`#${props.headersId[index]}`),
+        sectionDOM: sectionDomById,
       });
-      observer.observe(document.getElementById(`${props.headersId[index]}`));
+      observer.observe(sectionDomById);
     }
   }
 });
@@ -151,13 +156,14 @@ onMounted(async () => {
     </div>
     <div v-else>
       <a
-        v-for="header in props.headersId"
-        :key="header"
-        v-bind:id="'summary-' + header"
-        :href="'#' + header"
+        v-for="header in props.headers"
+        :key="header.id"
+        v-bind:id="('summary-' + header.id)"
+        :class="[`pumpkin-${header.level}`, 'anchor-style']"
+        :href="('#' + header.id)"
         @click="boldByclick"
       >
-        {{ header }}
+        {{ header.title }}
       </a>
     </div>
   </aside>
@@ -175,7 +181,6 @@ onMounted(async () => {
   z-index: 1;
 
   background: white;
-  border: 2px solid grey;
 }
 
 #summary-pumpkin > div > a {
@@ -194,15 +199,11 @@ onMounted(async () => {
   font-weight: normal;
 }
 
-.pumpkin-h1 {
-}
-
 .pumpkin-h2 {
   padding-left: 10px;
 }
 
 .pumpkin-h2:before {
-  content: "\00BB";
   margin-right: 6px;
 }
 
@@ -211,7 +212,6 @@ onMounted(async () => {
 }
 
 .pumpkin-h3:before {
-  content: "\00BB";
   margin-right: 6px;
 }
 
@@ -220,7 +220,6 @@ onMounted(async () => {
 }
 
 .pumpkin-h4:before {
-  content: "\00BB";
   margin-right: 6px;
 }
 
@@ -229,7 +228,6 @@ onMounted(async () => {
 }
 
 .pumpkin-h5:before {
-  content: "\00BB";
   margin-right: 6px;
 }
 
@@ -238,7 +236,6 @@ onMounted(async () => {
 }
 
 .pumpkin-h6:before {
-  content: "\00BB";
   margin-right: 6px;
 }
 

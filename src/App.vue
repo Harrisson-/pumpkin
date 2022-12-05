@@ -144,6 +144,28 @@ const sections = [
   },
 ];
 
+const standardSection = [{
+  id: 'section1s',
+  level: 'h1',
+  title: "section d'assaut",
+}, {
+  id: 'title1s',
+  level: 'h2',
+  title: "casquette",
+}, {
+  id: 'section2s',
+  level: 'h1',
+  title: "big section 1",
+}, {
+  id: 'title2s',
+  level: 'h2',
+  title: "beautiful",
+}, {
+  id: 'block1s',
+  level: 'h3',
+  title: "hello world",
+}]
+
 const modalState = reactive({ open: false });
 modalState.content =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada viverra velit auctor porttitor. Mauris ac dictum lectus. Nam blandit consequat venenatis. Proin tempus quam pretium ullamcorper euismod. Donec a ante eu augue ullamcorper pretium. Mauris id nunc posuere, lobortis tellus semper, tincidunt nisi. Nunc in commodo mauris, eget tincidunt turpis. Etiam vitae eros a dolor pretium convallis id et ligula. Aenean et ipsum feugiat dui venenatis finibus sit amet et odio. Vivamus id nunc vitae felis porta mattis. Etiam venenatis, erat vitae venenatis sagittis, erat nunc gravida nunc, facilisis placerat nunc leo laoreet dui. Donec mollis leo non feugiat tempor. Suspendisse vel nulla viverra, facilisis nunc non, sollicitudin ligula.";
@@ -180,13 +202,14 @@ function closeBannerSlot(modalOpen) {
 
   <main>
     <div class="left-block">
+      <!-- AUTOBUILD
       <pumpkinSummary
         :autoBuild="true"
         :autoBuildLevel="3"
         autoBuildDOMId="summary-parent-auto"
-      ></pumpkinSummary>
-      <!-- STANDARD
-      <pumpkinSummary :headersId="sections"></pumpkinSummary> -->
+      ></pumpkinSummary> -->
+      STANDARD
+      <pumpkinSummary :headers="standardSection"></pumpkinSummary>
     </div>
     <div class="right-block">
       <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
@@ -291,9 +314,9 @@ function closeBannerSlot(modalOpen) {
       </div>
       STANDARD
       <div class="summary-parent" id="summary-parent-standard">
-        <div class="summary-section" id="section1">
+        <div class="summary-section" id="section1s">
           <h1>section d'assaut</h1>
-          <div id="title1">
+          <div id="title1s">
             <h2>casquette</h2>
             <p>
               Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing
@@ -304,9 +327,9 @@ function closeBannerSlot(modalOpen) {
             </p>
           </div>
         </div>
-        <div class="summary-section" id="section2">
+        <div class="summary-section" id="section2s">
           <h1>big section 1</h1>
-          <div id="title2">
+          <div id="title2s">
             <h2>beautiful</h2>
             <p>
               Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing
@@ -315,7 +338,7 @@ function closeBannerSlot(modalOpen) {
               quwuis nowostrud exercitawootion ullamcowo lawooboworis nisi ut
               awooliquip ex ea commowodo consequawoot.
             </p>
-            <div id="block1">
+            <div id="block1s">
               <h3>hello world</h3>
               <p>
                 Loworem ipsuwum dolowor sit awoomet, cowonsectetur awoodipiscing
