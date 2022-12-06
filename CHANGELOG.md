@@ -1,3 +1,13 @@
+#### 0.3.1 (2022-12-06)
+
+##### Bug Fixes
+
+*  change size for better rendering ([c7a53e26](https://github.com/Harrisson-/pumpkin/commit/c7a53e26893a6a54b1573c8732a290d78a4a59a8))
+
+##### Code Style Changes
+
+*  improve overlay rendering ([6e58e7ae](https://github.com/Harrisson-/pumpkin/commit/6e58e7aeca05dcd9193079bd8caa93ac2e4f7dae))
+
 ### 0.3.0 (2022-12-05)
 
 ##### Chores
