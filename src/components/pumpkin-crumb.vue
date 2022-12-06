@@ -118,8 +118,8 @@ function showLinks() {
 .pumpkin-overlay {
   top: 0;
   left: 0;
-  width: 100em;
-  height: 100em;
+  width: 100vw;
+  height: 100vh;
   background-color: transparent;
   z-index: 10;
   position: absolute;
