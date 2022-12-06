@@ -24,14 +24,14 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
-  highlight: {
-    type: Boolean,
-    default: false,
-  },
-  highlightColor: {
-    type: String,
-    default: "#000",
-  },
+  // highlight: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // highlightColor: {
+  //   type: String,
+  //   default: "#000",
+  // },
   customTag: {
     type: String,
     default: "#",
@@ -127,7 +127,7 @@ const message = (el) => {
       contenteditable="true"
       @input="message"
     ></div>
-    <div id="tag-list" v-show="reactiveTags && reactiveTags.length > 0">
+    <div id="tag-list" v-if="reactiveTags && reactiveTags.length > 0">
       <div
         class="tag"
         @click="selectTag(tag)"
@@ -159,7 +159,7 @@ const message = (el) => {
 #tag-list {
   background-color: white;
   border: 1px solid black;
-  width: 100%;
+  width: 99%;
   position: absolute;
   transform: translate(0px, 100%);
 }

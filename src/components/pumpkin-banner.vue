@@ -67,7 +67,7 @@ const pumpkinBannerClasses = {
 <style lang="css" scoped>
 .pumpkin-banner {
   z-index: 999;
-  width: 100%;
+  width: 99%;
   border: 1px solid black;
   background-color: white;
   display: flex;
