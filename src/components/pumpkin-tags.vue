@@ -1,11 +1,76 @@
 <script setup>
 import { ref, computed } from "vue";
 
-const textContainerDom = ref(null);
+// the pattern design is just here to clean code and improve debug
+function TagsObject() {
+  let currentNode;
+  let childNode;
 
-let currentCaretPosition;
-let shareIndex = 0;
-let shareStackLinesLength = 0;
+  this.currentCaretPosition;
+  this.shareIndex = 0;
+  this.shareStackLinesLength = 0;
+  this.getLineContent = () => {
+    return textContainerDom.value.childNodes[this.shareIndex].data ||
+      textContainerDom.value.childNodes[this.shareIndex].textContent;
+  };
+  this.setNodeContext = (value) => {
+    currentNode = value;
+    childNode = value.firstChild || value; 
+  }
+  this.setCurrentNodeTextContent = (value) => {
+    currentNode.textContent = value;
+  }
+  this.getChildNode = () => {
+    return childNode;
+  }
+  this.getCurrentNode = () => {
+    return currentNode;
+  }
+}
+
+TagsObject.prototype.selectTag = async function(tag) {
+  this.setNodeContext(textContainerDom.value.childNodes[this.shareIndex]);
+  const lineContent = this.getLineContent(); 
+  let preText = lineContent.slice(
+    0,
+    this.currentCaretPosition - this.shareStackLinesLength
+  );
+  let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
+  let postText = lineContent.slice(
+    this.currentCaretPosition - this.shareStackLinesLength
+  );
+  let preHastagText = preText.slice(0, hastagePosition);
+
+  this.setCurrentNodeTextContent(preHastagText + `${props.customTag}${tag}` + postText);
+  // clean tag
+  reactiveTags.value = null;
+
+  // RESET CARRET POSITION START
+  textContainerDom.value.focus();
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.setStart(this.getChildNode(), (preHastagText + `${props.customTag}${tag}`).length);
+  range.collapse(true);
+
+  sel.removeAllRanges();
+  sel.addRange(range);
+  // RESET CARRET POSITION END
+
+  this.shareStackLinesLength = 0;
+  this.shareIndex = 0;
+};
+
+
+TagsObject.prototype.getCaretPosition = function() {
+  const range = window.getSelection().getRangeAt(0);
+  const preCaretRange = range.cloneRange();
+  preCaretRange.selectNodeContents(textContainerDom.value);
+  preCaretRange.setEnd(range.endContainer, range.endOffset);
+  this.currentCaretPosition = preCaretRange.toString().length;
+};
+
+const tags = new TagsObject();
+const textContainerDom = ref(null);
 
 const reactiveTags = computed({
   get: () => {
@@ -38,64 +103,17 @@ const props = defineProps({
   },
 });
 
-const selectTag = async (tag) => {
-  let lineContent =
-    textContainerDom.value.childNodes[shareIndex].data ||
-    textContainerDom.value.childNodes[shareIndex].textContent;
-
-  let preText = lineContent.slice(
-    0,
-    currentCaretPosition - shareStackLinesLength
-  );
-  let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
-  let postText = lineContent.slice(
-    currentCaretPosition - shareStackLinesLength
-  );
-  let preHastagText = preText.slice(0, hastagePosition);
-
-  textContainerDom.value.childNodes[shareIndex].textContent =
-    preHastagText + `${props.customTag}${tag}` + postText;
-  // clean tag
-  reactiveTags.value = null;
-
-  resetCaretPosition((preHastagText + `${props.customTag}${tag}`).length);
-  shareStackLinesLength = 0;
-  shareIndex = 0;
-};
-
-const resetCaretPosition = (position) => {
-  textContainerDom.value.focus();
-  const range = document.createRange();
-  const sel = window.getSelection();
-  const childNode =
-    textContainerDom.value.childNodes[shareIndex].firstChild ||
-    textContainerDom.value.childNodes[shareIndex];
-  range.setStart(childNode, position);
-  range.collapse(true);
-
-  sel.removeAllRanges();
-  sel.addRange(range);
-};
-
-const getCaretPosition = () => {
-  const range = window.getSelection().getRangeAt(0);
-  const preCaretRange = range.cloneRange();
-  preCaretRange.selectNodeContents(textContainerDom.value);
-  preCaretRange.setEnd(range.endContainer, range.endOffset);
-  currentCaretPosition = preCaretRange.toString().length;
-};
-
 const message = (el) => {
   let stackLineLength = 0;
 
-  getCaretPosition();
+  tags.getCaretPosition();
 
   el.target.childNodes.forEach(async (element, index) => {
-    const lineContent = element.data || element.textContent;
+    const localLineContent = element.data || element.textContent;
 
-    if (stackLineLength + lineContent.length >= currentCaretPosition) {
-      const words = lineContent
-        .slice(0, currentCaretPosition - stackLineLength)
+    if (stackLineLength + localLineContent.length >= tags.currentCaretPosition) {
+      const words = localLineContent
+        .slice(0, tags.currentCaretPosition - stackLineLength)
         .split(/[ ]/);
       const tagPosition = words[words.length - 1].search(props.customTag);
       if (tagPosition !== -1) {
@@ -104,15 +122,15 @@ const message = (el) => {
           words[words.length - 1].length
         );
         if (targetText && targetText.length > 0) {
-          shareIndex = index;
-          shareStackLinesLength = stackLineLength;
+          tags.shareIndex = index;
+          tags.shareStackLinesLength = stackLineLength;
           reactiveTags.value = targetText;
         } else {
           reactiveTags.value = null;
         }
       }
     } else {
-      stackLineLength += lineContent.length;
+      stackLineLength += localLineContent.length;
     }
   });
 };
@@ -130,7 +148,7 @@ const message = (el) => {
     <div id="tag-list" v-if="reactiveTags && reactiveTags.length > 0">
       <div
         class="tag"
-        @click="selectTag(tag)"
+        @click="tags.selectTag(tag)"
         v-for="tag in reactiveTags"
         :key="tag"
       >
