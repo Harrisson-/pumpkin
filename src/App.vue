@@ -202,14 +202,14 @@ function closeBannerSlot(modalOpen) {
 
   <main>
     <div class="left-block">
-      <!-- AUTOBUILD
+      AUTOBUILD
       <pumpkinSummary
         :autoBuild="true"
         :autoBuildLevel="3"
         autoBuildDOMId="summary-parent-auto"
-      ></pumpkinSummary> -->
+      ></pumpkinSummary>
       STANDARD
-      <pumpkinSummary :headers="standardSection"></pumpkinSummary>
+      <!-- <pumpkinSummary :headers="standardSection"></pumpkinSummary> -->
     </div>
     <div class="right-block">
       <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />

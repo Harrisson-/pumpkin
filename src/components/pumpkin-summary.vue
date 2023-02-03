@@ -7,6 +7,7 @@ const props = defineProps({
     type: Number,
     default: 0.5,
   },
+  // ONLY REQUIRED WHEN AUTOBUILD = FALSE
   // property required for headers :
   //  id: id of the targeted element
   //  level: level required for the element in the summary
@@ -20,10 +21,12 @@ const props = defineProps({
     default: false,
   },
   // number of level for autobuild, start from h1 to h6
+  // value between 0 to 5
   autoBuildLevel: {
     type: Number,
     default: 0,
   },
+  // ONLY REQUIRED WHEN AUTOBUILD = TRUE
   // Parent Id for building summary
   autoBuildDOMId: {
     type: String,
@@ -35,107 +38,193 @@ const props = defineProps({
   },
 });
 
-const summaryMap = new Set();
-let summary = ref();
-let scrollByClick = false;
-
-function transformToBold(domElement) {
-  for (const summaryElement of summaryMap) {
-    if (
-      summaryElement.titleDOM === domElement ||
-      summaryElement.sectionDOM === domElement
-    ) {
-      summaryElement.titleDOM.classList.add("bold-end");
-    } else if (summaryElement.titleDOM.classList.contains("bold-end")) {
-      summaryElement.titleDOM.classList.remove("bold-end");
-    }
+// VALIDATE LINKED PROPS START
+if (props.autoBuild) {
+  if (!props.autoBuildDOMId) {
+    throw new TypeError("autoBuildDOMId props is required due to autoBuild = true")
+  }
+  if (props.headers) {
+    throw new TypeError("headers props isn't required due to autoBuild = true")
+  }
+} else {
+  if (!props.headers) {
+    throw new TypeError("headers props is required due to autoBuild = false")
   }
 }
+// VALIDATE LINKED PROPS END
 
-function boldByclick(domElement) {
-  transformToBold(domElement.currentTarget);
-  scrollByClick = true;
-}
+class SummaryObject {
+  #observer;
+  #scrollByClick;
+  #summaryMap;
+  #optionObserver;
 
-// recursive selection
-function autobuild(autoBuildSummary, level, parentElement) {
-  if (level + 1 <= props.autoBuildLevel) {
-    let blocs = parentElement.querySelectorAll(`h${level + 1}`);
-    for (
-      let selectorSize = 0;
-      selectorSize <= blocs.length - 1;
-      selectorSize++
-    ) {
-      let currentParent = blocs[selectorSize].parentElement;
-      autoBuildSummary.push({
-        tag: `h${level + 1}`,
-        text: blocs[selectorSize].innerText,
-        titleNode: blocs[selectorSize],
-        target: currentParent,
-      });
-      autobuild(autoBuildSummary, level + 1, currentParent);
-    }
-  }
-  return autoBuildSummary;
-}
-
-onMounted(async () => {
-  const rootSummary = document.getElementById("summary-pumpkin");
-
-  if (props.autoBuild) {
-    summary.value = autobuild(
-      [],
-      0,
-      document.getElementById(`${props.autoBuildDOMId}`)
-    );
-  } else {
-    summary.value = rootSummary.querySelectorAll(":scope a");;
+  constructor(threshold) {
+    this.#scrollByClick = false;
+    this.#summaryMap = new Set();
+    this.#optionObserver = {
+      root: null,
+      rootMargin: "0px",
+      threshold: threshold,
+    };
+    this.#observer = new IntersectionObserver(this.#callbackObserver, this.#optionObserver);
   }
 
-  let options = {
-    root: null,
-    rootMargin: "0px",
-    threshold: props.threshold,
-  };
+  get observer() {
+    return this.#observer;
+  }
 
-  let callback = (entries, _observer) => {
+  static #callbackObserver(entries, _observer) {
     // Only trigger action when new block intersecting
-    if (entries[0].isIntersecting && !scrollByClick) {
-      transformToBold(entries[0].target);
+    if (entries[0].isIntersecting && this.scrollByClick) {
+      summaryContext.transformToBold(entries[0].target);
     }
-    scrollByClick = false;
+    this.scrollByClick = false;
   };
 
-  let observer = new IntersectionObserver(callback, options);
+  get scrollByClick() {
+    return this.#scrollByClick;
+  }
+  set scrollByClick(value) {
+    this.#scrollByClick = value;
+  }
 
-  await nextTick();
+  transformToBold(domElement) {
+    for (const summaryElement of this.#summaryMap) {
+      if (
+        summaryElement.titleDOM === domElement ||
+        summaryElement.sectionDOM === domElement
+      ) {
+        summaryElement.titleDOM.classList.add("bold-end");
+      } else if (summaryElement.titleDOM.classList.contains("bold-end")) {
+        summaryElement.titleDOM.classList.remove("bold-end");
+      }
+    }
+  }
+  boldByclick(domElement) {
+    this.transformToBold(domElement.currentTarget);
+    this.setScrollByClick(true);
+  }
+}
 
-  const summaryBlockDOM = rootSummary.querySelectorAll(":scope a");
+class AutoBuildElement extends SummaryObject { 
+  summaryBlockDOM;
+  #elementToObserve;
 
-  for (const [index, summaryEntry] of summary.value.entries()) {
-    if (props.autoBuild) {
-      const partialSummaryBlock = {
+  constructor(threshold) {
+    super(threshold);
+  }
+  
+  get elementToObserve() {
+    return this.#elementToObserve;
+  }
+
+  set elementToObserve(value) {
+    this.#elementToObserve = value;
+  }
+
+  setSummaryBlockDOM = (value) => {
+    summaryBlockDOM = value
+  }
+
+  // return element added and needed to be observed
+  addToSummaryMap = (summaryEntry, _index) => {
+    const partialSummaryBlock = {
         title: [...summaryEntry.target.childNodes].find(
           (element) => element.nodeName === summaryEntry.tag.toUpperCase()
         )?.innerHTML,
         sectionDOM: summaryEntry.target,
       };
-      summaryMap.add({
-        titleDOM: [...summaryBlockDOM].find(
-          (title) => title.innerText === partialSummaryBlock.title
-        ),
-        ...partialSummaryBlock,
-      });
-      observer.observe(summaryEntry.target);
-    } else {
-      const sectionDomById = document.getElementById(`${props.headers[index].id}`);
-      summaryMap.add({
-        titleId: props.headers[index].title,
-        titleDOM: summaryEntry,
-        sectionDOM: sectionDomById,
-      });
-      observer.observe(sectionDomById);
+    this.summaryMap.add({
+      titleDOM: [...this.summaryBlockDOM].find(
+        (title) => title.innerText === partialSummaryBlock.title
+      ),
+      ...partialSummaryBlock,
+    });
+    return summaryEntry.target
+  }
+
+  // recursive selection
+  autobuild = (autoBuildSummary, level, parentElement) => {
+    if (level + 1 <= props.autoBuildLevel) {
+      let blocs = parentElement.querySelectorAll(`h${level + 1}`);
+      for (
+        let selectorSize = 0;
+        selectorSize <= blocs.length - 1;
+        selectorSize++
+      ) {
+        let currentParent = blocs[selectorSize].parentElement;
+        autoBuildSummary.push({
+          tag: `h${level + 1}`,
+          text: blocs[selectorSize].innerText,
+          titleNode: blocs[selectorSize],
+          target: currentParent,
+        });
+        this.autobuild(autoBuildSummary, level + 1, currentParent);
+      }
     }
+    return autoBuildSummary;
+  }
+}
+
+class StandardBuildElement extends SummaryObject {
+  #elementToObserve;
+
+
+  constructor(threshold) {
+    super(threshold);
+  }
+  
+  get elementToObserve() {
+    return this.#elementToObserve;
+  }
+
+  set elementToObserve(value) {
+    this.#elementToObserve = value;
+  }
+
+  // return element added and needed to be observed
+  addToSummaryMap = (summaryEntry, index) => {
+    this.summaryMap.add({
+      titleId: props.headers[index].title,
+      titleDOM: summaryEntry,
+      sectionDOM: sectionDomById,
+    });
+    return document.getElementById(`${props.headers[index].id}`);
+  }
+}
+
+let summaryContext;
+
+if (props.autoBuild) {
+  summaryContext = new AutoBuildElement(props.threshold);
+} else {
+  summaryContext = new StandardBuildElement(props.threshold);
+}
+
+let summary = ref();
+
+onMounted(async () => {
+  const rootSummary = document.getElementById("summary-pumpkin");
+
+  if (summaryContext.hasOwnProperty("autobuild")) {
+    summary.value = summaryContext.autobuild(
+      [],
+      0,
+      document.getElementById(`${props.autoBuildDOMId}`)
+    );
+  } else {
+    summary.value = rootSummary.querySelectorAll(":scope a");
+  }
+
+  summaryContext.initObserver();
+
+  await nextTick();
+  summaryContext.setSummaryBlockDOM(rootSummary.querySelectorAll(":scope a"));
+
+  for (const [index, summaryEntry] of summary.value.entries()) {
+    summaryContext.elementToObserve = summaryContext.addToSummaryMap(summaryEntry, index);
+    summaryContext.getObserver().observe(summaryContext.elementToObserve);
   }
 });
 </script>
@@ -149,7 +238,7 @@ onMounted(async () => {
         :id="'summary-' + value.text"
         :class="[`pumpkin-${value.tag}`, 'anchor-style']"
         :href="'#' + value.text"
-        @click="boldByclick"
+        @click="summaryContext.boldByclick"
       >
         {{ value.text }}
       </a>
@@ -161,7 +250,7 @@ onMounted(async () => {
         v-bind:id="('summary-' + header.id)"
         :class="[`pumpkin-${header.level}`, 'anchor-style']"
         :href="('#' + header.id)"
-        @click="boldByclick"
+        @click="summaryContext.boldByclick"
       >
         {{ header.title }}
       </a>
