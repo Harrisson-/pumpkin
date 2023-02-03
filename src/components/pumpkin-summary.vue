@@ -41,14 +41,16 @@ const props = defineProps({
 // VALIDATE LINKED PROPS START
 if (props.autoBuild) {
   if (!props.autoBuildDOMId) {
-    throw new TypeError("autoBuildDOMId props is required due to autoBuild = true")
+    throw new TypeError(
+      "autoBuildDOMId props is required due to autoBuild = true"
+    );
   }
   if (props.headers) {
-    throw new TypeError("headers props isn't required due to autoBuild = true")
+    throw new TypeError("headers props isn't required due to autoBuild = true");
   }
 } else {
   if (!props.headers) {
-    throw new TypeError("headers props is required due to autoBuild = false")
+    throw new TypeError("headers props is required due to autoBuild = false");
   }
 }
 // VALIDATE LINKED PROPS END
@@ -56,31 +58,37 @@ if (props.autoBuild) {
 class SummaryObject {
   #observer;
   #scrollByClick;
-  #summaryMap;
+  summaryMap;
   #optionObserver;
 
   constructor(threshold) {
     this.#scrollByClick = false;
-    this.#summaryMap = new Set();
+    this.summaryMap = new Set();
     this.#optionObserver = {
       root: null,
       rootMargin: "0px",
       threshold: threshold,
     };
-    this.#observer = new IntersectionObserver(this.#callbackObserver, this.#optionObserver);
   }
 
   get observer() {
     return this.#observer;
   }
 
-  static #callbackObserver(entries, _observer) {
+  initObserver() {
+    this.#observer = new IntersectionObserver(
+      this.#callbackObserver,
+      this.#optionObserver
+    );
+  }
+
+  #callbackObserver(entries, _observer) {
     // Only trigger action when new block intersecting
     if (entries[0].isIntersecting && this.scrollByClick) {
       summaryContext.transformToBold(entries[0].target);
     }
     this.scrollByClick = false;
-  };
+  }
 
   get scrollByClick() {
     return this.#scrollByClick;
@@ -90,7 +98,7 @@ class SummaryObject {
   }
 
   transformToBold(domElement) {
-    for (const summaryElement of this.#summaryMap) {
+    for (const summaryElement of this.summaryMap) {
       if (
         summaryElement.titleDOM === domElement ||
         summaryElement.sectionDOM === domElement
@@ -107,14 +115,14 @@ class SummaryObject {
   }
 }
 
-class AutoBuildElement extends SummaryObject { 
-  summaryBlockDOM;
+class AutoBuildElement extends SummaryObject {
+  #summaryBlockDOM;
   #elementToObserve;
 
   constructor(threshold) {
     super(threshold);
   }
-  
+
   get elementToObserve() {
     return this.#elementToObserve;
   }
@@ -123,26 +131,26 @@ class AutoBuildElement extends SummaryObject {
     this.#elementToObserve = value;
   }
 
-  setSummaryBlockDOM = (value) => {
-    summaryBlockDOM = value
+  set summaryBlockDOM(value) {
+    this.#summaryBlockDOM = value;
   }
 
   // return element added and needed to be observed
   addToSummaryMap = (summaryEntry, _index) => {
     const partialSummaryBlock = {
-        title: [...summaryEntry.target.childNodes].find(
-          (element) => element.nodeName === summaryEntry.tag.toUpperCase()
-        )?.innerHTML,
-        sectionDOM: summaryEntry.target,
-      };
+      title: [...summaryEntry.target.childNodes].find(
+        (element) => element.nodeName === summaryEntry.tag.toUpperCase()
+      )?.innerHTML,
+      sectionDOM: summaryEntry.target,
+    };
     this.summaryMap.add({
-      titleDOM: [...this.summaryBlockDOM].find(
+      titleDOM: [...this.#summaryBlockDOM].find(
         (title) => title.innerText === partialSummaryBlock.title
       ),
       ...partialSummaryBlock,
     });
-    return summaryEntry.target
-  }
+    return summaryEntry.target;
+  };
 
   // recursive selection
   autobuild = (autoBuildSummary, level, parentElement) => {
@@ -164,17 +172,16 @@ class AutoBuildElement extends SummaryObject {
       }
     }
     return autoBuildSummary;
-  }
+  };
 }
 
 class StandardBuildElement extends SummaryObject {
   #elementToObserve;
 
-
   constructor(threshold) {
     super(threshold);
   }
-  
+
   get elementToObserve() {
     return this.#elementToObserve;
   }
@@ -185,13 +192,14 @@ class StandardBuildElement extends SummaryObject {
 
   // return element added and needed to be observed
   addToSummaryMap = (summaryEntry, index) => {
-    this.summaryMap.add({
+    const value = {
       titleId: props.headers[index].title,
       titleDOM: summaryEntry,
-      sectionDOM: sectionDomById,
-    });
-    return document.getElementById(`${props.headers[index].id}`);
-  }
+      sectionDOM: document.getElementById(`${props.headers[index].id}`),
+    };
+    this.summaryMap.add(value);
+    return value.sectionDOM;
+  };
 }
 
 let summaryContext;
@@ -207,7 +215,7 @@ let summary = ref();
 onMounted(async () => {
   const rootSummary = document.getElementById("summary-pumpkin");
 
-  if (summaryContext.hasOwnProperty("autobuild")) {
+  if (summaryContext instanceof AutoBuildElement) {
     summary.value = summaryContext.autobuild(
       [],
       0,
@@ -220,11 +228,14 @@ onMounted(async () => {
   summaryContext.initObserver();
 
   await nextTick();
-  summaryContext.setSummaryBlockDOM(rootSummary.querySelectorAll(":scope a"));
+  summaryContext.summaryBlockDOM = rootSummary.querySelectorAll(":scope a");
 
   for (const [index, summaryEntry] of summary.value.entries()) {
-    summaryContext.elementToObserve = summaryContext.addToSummaryMap(summaryEntry, index);
-    summaryContext.getObserver().observe(summaryContext.elementToObserve);
+    summaryContext.elementToObserve = summaryContext.addToSummaryMap(
+      summaryEntry,
+      index
+    );
+    summaryContext.observer.observe(summaryContext.elementToObserve);
   }
 });
 </script>
@@ -247,9 +258,9 @@ onMounted(async () => {
       <a
         v-for="header in props.headers"
         :key="header.id"
-        v-bind:id="('summary-' + header.id)"
+        v-bind:id="'summary-' + header.id"
         :class="[`pumpkin-${header.level}`, 'anchor-style']"
-        :href="('#' + header.id)"
+        :href="'#' + header.id"
         @click="summaryContext.boldByclick"
       >
         {{ header.title }}
