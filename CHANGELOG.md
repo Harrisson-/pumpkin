@@ -1,3 +1,20 @@
+#### 0.3.3 (2023-02-06)
+
+##### Chores
+
+* **eslint:**  add ecmaversion to remove class error formating ([065bdc2c](https://github.com/Harrisson-/pumpkin/commit/065bdc2cbf33d089cb2b6ef2f3776215b894bbd6))
+
+##### Other Changes
+
+* **summary:**
+  *  finish code clean ([3edcf3b7](https://github.com/Harrisson-/pumpkin/commit/3edcf3b7bb01ff56c2c81ea211e124dbbe0eb194))
+  *  wip refacto ([9a8cf466](https://github.com/Harrisson-/pumpkin/commit/9a8cf466a5e3209bb30017a4d2ef5042774c5201))
+  *  wip ([ef64b1bb](https://github.com/Harrisson-/pumpkin/commit/ef64b1bb7f38bc1731dd901aa31f1cda9c956b41))
+
+##### Refactors
+
+* **tags:**  implement factory function pattern to clean code ([60a605aa](https://github.com/Harrisson-/pumpkin/commit/60a605aad4d9f079a9567d90c1aa12898bd7bfd7))
+
 #### 0.3.1 (2022-12-06)
 
 ##### Bug Fixes
