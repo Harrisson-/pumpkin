@@ -84,7 +84,7 @@ class SummaryObject {
 
   #callbackObserver(entries, _observer) {
     // Only trigger action when new block intersecting
-    if (entries[0].isIntersecting && this.scrollByClick) {
+    if (entries[0].isIntersecting && !this.scrollByClick) {
       summaryContext.transformToBold(entries[0].target);
     }
     this.scrollByClick = false;
@@ -111,7 +111,7 @@ class SummaryObject {
   }
   boldByclick(domElement) {
     this.transformToBold(domElement.currentTarget);
-    this.setScrollByClick(true);
+    this.scrollByClick = true;
   }
 }
 
