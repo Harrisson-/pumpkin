@@ -1,5 +1,12 @@
 <script setup>
 import { ref, computed } from "vue";
+import { 
+  retriveAllRawText,
+  retrieveComplexText,
+  calculateCaretPosition,
+  isLineContainSpecialCharacters,
+  firstSpecialCharacterMatchIndex
+} from "../utils/contenteditableParser"
 
 // the pattern design is just here to clean code and improve debug
 function TagsObject() {
@@ -18,7 +25,7 @@ function TagsObject() {
     childNode = value.firstChild || value; 
   }
   this.setCurrentNodeTextContent = (value) => {
-    currentNode.textContent = value;
+    currentNode.innerHTML = value;
   }
   this.getChildNode = () => {
     return childNode;
@@ -41,32 +48,24 @@ TagsObject.prototype.selectTag = async function(tag) {
   );
   let preHastagText = preText.slice(0, hastagePosition);
 
-  this.setCurrentNodeTextContent(preHastagText + `${props.customTag}${tag}` + postText);
+  // REPLACE TEXT NODE BY ELEMENT NODE
+  this.setCurrentNodeTextContent(preHastagText + `<div style="color:blue;">${props.customTag}${tag}</div>` + postText);
   // clean tag
   reactiveTags.value = null;
 
   // RESET CARRET POSITION START
-  textContainerDom.value.focus();
-  const range = document.createRange();
-  const sel = window.getSelection();
-  range.setStart(this.getChildNode(), (preHastagText + `${props.customTag}${tag}`).length);
-  range.collapse(true);
+  // textContainerDom.value.focus();
+  // const range = document.createRange();
+  // const sel = window.getSelection();
+  // range.setStart(this.getChildNode(), (preHastagText + `${props.customTag}${tag}`).length);
+  // range.collapse(true);
 
-  sel.removeAllRanges();
-  sel.addRange(range);
+  // sel.removeAllRanges();
+  // sel.addRange(range);
   // RESET CARRET POSITION END
 
   this.shareStackLinesLength = 0;
   this.shareIndex = 0;
-};
-
-
-TagsObject.prototype.getCaretPosition = function() {
-  const range = window.getSelection().getRangeAt(0);
-  const preCaretRange = range.cloneRange();
-  preCaretRange.selectNodeContents(textContainerDom.value);
-  preCaretRange.setEnd(range.endContainer, range.endOffset);
-  this.currentCaretPosition = preCaretRange.toString().length;
 };
 
 const tags = new TagsObject();
@@ -89,14 +88,14 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
-  // highlight: {
-  //   type: Boolean,
-  //   default: false,
-  // },
-  // highlightColor: {
-  //   type: String,
-  //   default: "#000",
-  // },
+  highlight: {
+    type: Boolean,
+    default: false,
+  },
+  highlightColor: {
+    type: String,
+    default: "#000",
+  },
   customTag: {
     type: String,
     default: "#",
@@ -104,35 +103,28 @@ const props = defineProps({
 });
 
 const message = (el) => {
-  let stackLineLength = 0;
 
-  tags.getCaretPosition();
-
-  el.target.childNodes.forEach(async (element, index) => {
-    const localLineContent = element.data || element.textContent;
-
-    if (stackLineLength + localLineContent.length >= tags.currentCaretPosition) {
-      const words = localLineContent
-        .slice(0, tags.currentCaretPosition - stackLineLength)
-        .split(/[ ]/);
-      const tagPosition = words[words.length - 1].search(props.customTag);
-      if (tagPosition !== -1) {
-        const targetText = words[words.length - 1].substring(
-          tagPosition + 1,
-          words[words.length - 1].length
-        );
-        if (targetText && targetText.length > 0) {
-          tags.shareIndex = index;
-          tags.shareStackLinesLength = stackLineLength;
-          reactiveTags.value = targetText;
+  function searchKeyword(caretPosition, node, customeTag) {
+    const text = retriveAllRawText(node)
+    let reduceLength = caretPosition;
+    for (let line of text) {
+      if (reduceLength - line.length <= 0) {
+        let shrunkLine = line.substring(0, reduceLength);
+        const tagPosition = shrunkLine.lastIndexOf(customeTag)
+        if (tagPosition != -1 && tagPosition +1 < reduceLength) {
+          const stringFromTagePosition = line.slice(tagPosition + 1)
+          const keyWord = stringFromTagePosition.substring(0, firstSpecialCharacterMatchIndex(stringFromTagePosition))
+          reactiveTags.value = keyWord;
+          break;
         } else {
           reactiveTags.value = null;
         }
       }
-    } else {
-      stackLineLength += localLineContent.length;
+      reduceLength -= line.length;
     }
-  });
+  }
+  const caretPosition = calculateCaretPosition(window, textContainerDom)
+  searchKeyword(caretPosition, el.currentTarget, props.customTag);
 };
 </script>
 
