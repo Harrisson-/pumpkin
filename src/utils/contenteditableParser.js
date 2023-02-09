@@ -104,6 +104,7 @@ function retrieveComplexText(target) {
      *          value => raw text
      *          style => attributes.nodeValue
      *          type => type
+     *          node => ?
      *      }
      *  ]
      * ]

@@ -8,68 +8,11 @@ import {
   firstSpecialCharacterMatchIndex
 } from "../utils/contenteditableParser"
 
-// the pattern design is just here to clean code and improve debug
-function TagsObject() {
-  let currentNode;
-  let childNode;
-
-  this.currentCaretPosition;
-  this.shareIndex = 0;
-  this.shareStackLinesLength = 0;
-  this.getLineContent = () => {
-    return textContainerDom.value.childNodes[this.shareIndex].data ||
-      textContainerDom.value.childNodes[this.shareIndex].textContent;
-  };
-  this.setNodeContext = (value) => {
-    currentNode = value;
-    childNode = value.firstChild || value; 
-  }
-  this.setCurrentNodeTextContent = (value) => {
-    currentNode.innerHTML = value;
-  }
-  this.getChildNode = () => {
-    return childNode;
-  }
-  this.getCurrentNode = () => {
-    return currentNode;
-  }
-}
-
-TagsObject.prototype.selectTag = async function(tag) {
-  this.setNodeContext(textContainerDom.value.childNodes[this.shareIndex]);
-  const lineContent = this.getLineContent(); 
-  let preText = lineContent.slice(
-    0,
-    this.currentCaretPosition - this.shareStackLinesLength
-  );
-  let hastagePosition = preText.lastIndexOf(`${props.customTag}`);
-  let postText = lineContent.slice(
-    this.currentCaretPosition - this.shareStackLinesLength
-  );
-  let preHastagText = preText.slice(0, hastagePosition);
-
-  // REPLACE TEXT NODE BY ELEMENT NODE
-  this.setCurrentNodeTextContent(preHastagText + `<div style="color:blue;">${props.customTag}${tag}</div>` + postText);
-  // clean tag
-  reactiveTags.value = null;
-
-  // RESET CARRET POSITION START
-  // textContainerDom.value.focus();
-  // const range = document.createRange();
-  // const sel = window.getSelection();
-  // range.setStart(this.getChildNode(), (preHastagText + `${props.customTag}${tag}`).length);
-  // range.collapse(true);
-
-  // sel.removeAllRanges();
-  // sel.addRange(range);
-  // RESET CARRET POSITION END
-
-  this.shareStackLinesLength = 0;
-  this.shareIndex = 0;
-};
-
-const tags = new TagsObject();
 const textContainerDom = ref(null);
+let tagPosition;
+let lineIndex;
+let keyWord;
+let rawText = [];
 
 const reactiveTags = computed({
   get: () => {
@@ -105,15 +48,17 @@ const props = defineProps({
 const message = (el) => {
 
   function searchKeyword(caretPosition, node, customeTag) {
-    const text = retriveAllRawText(node)
+    rawText = retriveAllRawText(node)
     let reduceLength = caretPosition;
-    for (let line of text) {
+    for (let [index, line] of rawText.entries()) {
       if (reduceLength - line.length <= 0) {
         let shrunkLine = line.substring(0, reduceLength);
-        const tagPosition = shrunkLine.lastIndexOf(customeTag)
+        tagPosition = shrunkLine.lastIndexOf(customeTag)
         if (tagPosition != -1 && tagPosition +1 < reduceLength) {
+          // share node
           const stringFromTagePosition = line.slice(tagPosition + 1)
-          const keyWord = stringFromTagePosition.substring(0, firstSpecialCharacterMatchIndex(stringFromTagePosition))
+          keyWord = stringFromTagePosition.substring(0, firstSpecialCharacterMatchIndex(stringFromTagePosition));
+          lineIndex = index;
           reactiveTags.value = keyWord;
           break;
         } else {
@@ -126,6 +71,36 @@ const message = (el) => {
   const caretPosition = calculateCaretPosition(window, textContainerDom)
   searchKeyword(caretPosition, el.currentTarget, props.customTag);
 };
+
+async function selectTag(tag) {
+  const childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
+    textContainerDom.value.childNodes[lineIndex];
+
+  const lineContent = rawText[lineIndex];
+
+  const newLine = lineContent.substring(0, tagPosition + 1) + tag + lineContent.substring((tagPosition + 1) + keyWord.length);
+  
+  // REPLACE TEXT NODE BY ELEMENT NODE
+  childNode.nodeValue = newLine;
+  //= preHastagText + `<div style="color:blue;">${props.customTag}${tag}</div>` + postText;
+  console.log('hello', newLine);
+  
+  resetCaretPosition(textContainerDom, childNode, (lineContent.substring(0, tagPosition + 1) + tag).length);
+  // clean tag
+  reactiveTags.value = null;
+
+};
+
+function resetCaretPosition(containerDOM, node, addedLength) {
+  containerDOM.value.focus();
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.setStart(node, addedLength);
+  range.collapse(true);
+
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
 </script>
 
 <template>
@@ -140,7 +115,7 @@ const message = (el) => {
     <div id="tag-list" v-if="reactiveTags && reactiveTags.length > 0">
       <div
         class="tag"
-        @click="tags.selectTag(tag)"
+        @click="selectTag(tag)"
         v-for="tag in reactiveTags"
         :key="tag"
       >
