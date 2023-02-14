@@ -5,7 +5,8 @@ import {
   retrieveComplexText,
   calculateCaretPosition,
   isLineContainSpecialCharacters,
-  firstSpecialCharacterMatchIndex
+  firstSpecialCharacterMatchIndex,
+  cleanAllTextNode
 } from "../utils/contenteditableParser"
 
 const textContainerDom = ref(null);
@@ -37,7 +38,7 @@ const props = defineProps({
   },
   highlightColor: {
     type: String,
-    default: "#000",
+    default: "#1E90FF",
   },
   customTag: {
     type: String,
@@ -68,28 +69,53 @@ const message = (el) => {
       reduceLength -= line.length;
     }
   }
+  
   const caretPosition = calculateCaretPosition(window, textContainerDom)
   searchKeyword(caretPosition, el.currentTarget, props.customTag);
 };
 
 async function selectTag(tag) {
-  const childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
-    textContainerDom.value.childNodes[lineIndex];
 
+  let childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
+    textContainerDom.value.childNodes[lineIndex];
   const lineContent = rawText[lineIndex];
 
-  const newLine = lineContent.substring(0, tagPosition + 1) + tag + lineContent.substring((tagPosition + 1) + keyWord.length);
-  
+  // const newLine = lineContent.substring(0, tagPosition + 1) + tag + lineContent.substring((tagPosition + 1) + keyWord.length);
+
   // REPLACE TEXT NODE BY ELEMENT NODE
-  childNode.nodeValue = newLine;
-  //= preHastagText + `<div style="color:blue;">${props.customTag}${tag}</div>` + postText;
-  console.log('hello', newLine);
+  childNode.nodeValue = lineContent.substring(0, tagPosition);
+
+  if (props.highlight) {
+    cleanAllTextNode([textContainerDom.value]);
+    // temporaire
+    childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
+    textContainerDom.value.childNodes[lineIndex];
+    // recréer la line avec tout les enfants
+    const newNode = document.createElement('span');
+    newNode.style.color = props.highlightColor;
+    newNode.innerHTML = props.customTag + tag;
+    childNode.parentNode.appendChild(newNode);
+
+    
+    const afterNode = document.createElement('span');
+    afterNode.innerHTML = lineContent.substring((tagPosition + 1) + keyWord.length);
+    childNode.parentNode.appendChild(afterNode);
+
+    rewriteLine();
+    //push la nouvelle ligne avec replaceChild
+  }
   
   resetCaretPosition(textContainerDom, childNode, (lineContent.substring(0, tagPosition + 1) + tag).length);
   // clean tag
   reactiveTags.value = null;
-
 };
+
+function rewriteLine() {
+  // nodeType 3 is textNode
+  if (textContainerDom.value.childNodes[lineIndex].nodeType === 3) {
+
+  }
+}
 
 function resetCaretPosition(containerDOM, node, addedLength) {
   containerDOM.value.focus();
@@ -106,7 +132,6 @@ function resetCaretPosition(containerDOM, node, addedLength) {
 <template>
   <div class="input-container">
     <div
-      type="text"
       ref="textContainerDom"
       id="text"
       contenteditable="true"

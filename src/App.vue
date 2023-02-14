@@ -217,7 +217,7 @@ function closeBannerSlot(modalOpen) {
       <pumpkinSummary :headers="standardSection"></pumpkinSummary>
     </div>
     <div class="right-block">
-      <Tags :given-tags="filteredTags.value" @search-word="searchHashtag" />
+      <Tags highlight :given-tags="filteredTags.value" @search-word="searchHashtag" />
       <h1>BreadCrumbs</h1>
       <Breadcrumb :crumbs="crumbs" />
       <Breadcrumb :crumbs="longCrumbs" :shrink="true" />

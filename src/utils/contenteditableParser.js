@@ -144,13 +144,27 @@ function firstSpecialCharacterMatchIndex(line) {
     return value ? value.index : line.length;
 }
 
-
-
+/**
+ * 
+ * @param {Node[] | NodeListOf<ChildNode>} targets
+ */
+function cleanAllTextNode(targets) {
+    for(let [index, node] of targets.entries()) {
+        if (node.nodeType === 3) {
+            const newNode = document.createElement("span");
+            newNode.innerHTML = node.nodeValue || '';
+            targets[index].parentNode?.replaceChild(newNode, node);
+        }
+        cleanAllTextNode(node.childNodes);
+    }
+    return;
+}
 
 export {
     calculateCaretPosition,
     retriveAllRawText,
     retrieveComplexText,
     isLineContainSpecialCharacters,
-    firstSpecialCharacterMatchIndex
+    firstSpecialCharacterMatchIndex,
+    cleanAllTextNode,
 };
