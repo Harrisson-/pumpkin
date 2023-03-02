@@ -6,12 +6,14 @@ import {
   calculateCaretPosition,
   isLineContainSpecialCharacters,
   firstSpecialCharacterMatchIndex,
-  cleanAllTextNode
+  cleanAllTextNode,
+  rewriteDomLine
 } from "../utils/contenteditableParser"
 
 const textContainerDom = ref(null);
 let tagPosition;
 let lineIndex;
+let caretPositionInLine;
 let keyWord;
 let rawText = [];
 
@@ -47,7 +49,7 @@ const props = defineProps({
 });
 
 const message = (el) => {
-
+  
   function searchKeyword(caretPosition, node, customeTag) {
     rawText = retriveAllRawText(node)
     let reduceLength = caretPosition;
@@ -55,11 +57,12 @@ const message = (el) => {
       if (reduceLength - line.length <= 0) {
         let shrunkLine = line.substring(0, reduceLength);
         tagPosition = shrunkLine.lastIndexOf(customeTag)
-        if (tagPosition != -1 && tagPosition +1 < reduceLength) {
+        if (tagPosition != -1 && tagPosition +1 < reduceLength && !shrunkLine.substring(tagPosition + 1).includes(" ")) {
           // share node
           const stringFromTagePosition = line.slice(tagPosition + 1)
           keyWord = stringFromTagePosition.substring(0, firstSpecialCharacterMatchIndex(stringFromTagePosition));
           lineIndex = index;
+          caretPositionInLine = reduceLength;
           reactiveTags.value = keyWord;
           break;
         } else {
@@ -76,45 +79,62 @@ const message = (el) => {
 
 async function selectTag(tag) {
 
-  let childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
-    textContainerDom.value.childNodes[lineIndex];
+  // let childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
+  //   textContainerDom.value.childNodes[lineIndex];
   const lineContent = rawText[lineIndex];
 
-  // const newLine = lineContent.substring(0, tagPosition + 1) + tag + lineContent.substring((tagPosition + 1) + keyWord.length);
+  const newLine = lineContent.substring(0, tagPosition + 1) + tag + lineContent.substring((tagPosition + 1) + keyWord.length);
 
   // REPLACE TEXT NODE BY ELEMENT NODE
-  childNode.nodeValue = lineContent.substring(0, tagPosition);
+  // childNode.nodeValue = lineContent.substring(0, tagPosition);
 
   if (props.highlight) {
-    cleanAllTextNode([textContainerDom.value]);
     // temporaire
-    childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
-    textContainerDom.value.childNodes[lineIndex];
-    // recréer la line avec tout les enfants
-    const newNode = document.createElement('span');
-    newNode.style.color = props.highlightColor;
-    newNode.innerHTML = props.customTag + tag;
-    childNode.parentNode.appendChild(newNode);
-
+    // const line = textContainerDom.value.childNodes[lineIndex];
+    // childNode = textContainerDom.value.childNodes[lineIndex].firstChild ||
+    // textContainerDom.value.childNodes[lineIndex];
+    // const tagSpan = createNewTagSpan(childNode.parentNode, props.customTag + tag);
     
-    const afterNode = document.createElement('span');
-    afterNode.innerHTML = lineContent.substring((tagPosition + 1) + keyWord.length);
-    childNode.parentNode.appendChild(afterNode);
 
-    rewriteLine();
+    // const newSpan = createNewSpan(childNode.parentNode, lineContent.substring((tagPosition + 1) + keyWord.length));
+    rewriteLine(newLine)
+    // resetCaretPosition(textContainerDom, newSpan, 0);
+    // rewriteLine();
     //push la nouvelle ligne avec replaceChild
+  } else {
+    resetCaretPosition(textContainerDom, newSpan, (lineContent.substring(0, tagPosition + 1) + tag).length);
   }
   
-  resetCaretPosition(textContainerDom, childNode, (lineContent.substring(0, tagPosition + 1) + tag).length);
   // clean tag
   reactiveTags.value = null;
 };
 
-function rewriteLine() {
-  // nodeType 3 is textNode
-  if (textContainerDom.value.childNodes[lineIndex].nodeType === 3) {
+function rewriteLine(newLine) {
+  const caretPosition = calculateCaretPosition(window, textContainerDom);
+  console.log('caretPosition', caretPosition);
 
-  }
+  const lineNode = textContainerDom.value.childNodes[lineIndex];
+
+  // bind function with props tags properties
+  rewriteDomLine(lineNode, newLine, props.customTag, {highlightColor: props.highlightColor});
+
+
+  /**
+   * get the node line
+   * get node with selected tag 
+   * (line length - current carret position) => lastindexOf tag , newLine end
+   * remove text
+   * create span before with tag and color
+   * OR
+   * Parse line
+   * create span tag, each #, close span and create span...
+   * if 'span tag' create a last empty span
+   */
+  // nodeType 3 is textNode
+  cleanAllTextNode(textContainerDom.value.childNodes);
+  // if (textContainerDom.value.childNodes[lineIndex].nodeType === 3) {
+
+  // }
 }
 
 function resetCaretPosition(containerDOM, node, addedLength) {

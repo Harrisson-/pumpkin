@@ -28,7 +28,7 @@ function getRawTextNode(node) {
  * @param {Node} node 
  */
 function getRawElementNode(node) {
-    return retriveAllRawText(node).join(' ');
+    return retriveAllRawText(node).join('');
 }
 
 /**
@@ -149,7 +149,7 @@ function firstSpecialCharacterMatchIndex(line) {
  * @param {Node[] | NodeListOf<ChildNode>} targets
  */
 function cleanAllTextNode(targets) {
-    for(let [index, node] of targets.entries()) {
+    for(const [index, node] of targets.entries()) {
         if (node.nodeType === 3) {
             const newNode = document.createElement("span");
             newNode.innerHTML = node.nodeValue || '';
@@ -160,6 +160,65 @@ function cleanAllTextNode(targets) {
     return;
 }
 
+
+function createNewSpan(parentNode, content) {
+    const node = document.createElement('span');
+    node.innerHTML = content.length > 0 ? content : " ";
+    parentNode.appendChild(node);
+    return node;
+}
+
+function createNewTagSpan(parentNode, content, tagProperties) {
+    const tagNode = document.createElement('span');
+    tagNode.style.color = tagProperties.highlightColor;
+    tagNode.innerHTML = content;
+    parentNode.appendChild(tagNode);
+    return tagNode;
+}
+
+function adaptNode(node, text) {
+    if (node.nodeType === 3) {
+        const spanNode = document.createElement('span');
+        spanNode.textContent = text;
+        node.parentNode.replaceChild(spanNode, node);
+        return spanNode;
+    }
+    return node;
+}
+
+/**
+ * 
+ * @param { Element } node
+ */
+function rewriteDomLine(node, newLineText, customTag, tagProperties) {
+    node = adaptNode(node, newLineText);
+    node.innerHTML = '';
+    const matches = newLineText.matchAll(customTag);
+    let indexStep = 0;
+    for (const match of matches) {
+        const subtext = newLineText.substring(indexStep, match.index);
+        createNewSpan(node, subtext);
+
+        const sub = newLineText.substring(Number(match.index));
+        const endTag = sub.search(/[ `!@$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/)
+        let tag;
+        if (endTag !== -1) {
+            tag = newLineText.substring(Number(match.index), Number(match.index) + endTag);
+        } else if ((newLineText.length - indexStep - (subtext + sub).length) === 0) {
+            tag = sub;
+        }
+        createNewTagSpan(node, tag, tagProperties);
+        
+        indexStep = Number(match.index) + tag.length;
+    }
+    // create last text node if possible
+    // Need a case to add empty span if tag is end of line
+    if (indexStep < newLineText.length) {
+        const subtext = newLineText.substring(indexStep)
+        createNewSpan(node, subtext);
+    }
+}
+
 export {
     calculateCaretPosition,
     retriveAllRawText,
@@ -167,4 +226,5 @@ export {
     isLineContainSpecialCharacters,
     firstSpecialCharacterMatchIndex,
     cleanAllTextNode,
+    rewriteDomLine,
 };
