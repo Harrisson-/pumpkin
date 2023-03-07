@@ -1,6 +1,7 @@
 //@ts-check
 
-const ALLSPECIALCHARACTERS = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/
+const ALLSPECIALCHARACTERS =  "[ `!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?~]"
+const ALLSPECIALCHARACTERSREGEX = new RegExp(`${ALLSPECIALCHARACTERS}`)
 
 /**
  * cf : https://developer.mozilla.org/fr/docs/Web/API/Node/nodeType
@@ -131,7 +132,7 @@ function calculateCaretPosition(context, textContainerDOM) {
  * @param {String} line 
  */
 function isLineContainSpecialCharacters(line) {
-    return ALLSPECIALCHARACTERS.test(line);
+    return ALLSPECIALCHARACTERSREGEX.test(line);
 }
 
 /**
@@ -140,7 +141,7 @@ function isLineContainSpecialCharacters(line) {
  * @returns {Number}
  */
 function firstSpecialCharacterMatchIndex(line) {
-    const value = ALLSPECIALCHARACTERS.exec(line);
+    const value = ALLSPECIALCHARACTERSREGEX.exec(line);
     return value ? value.index : line.length;
 }
 
@@ -186,45 +187,15 @@ function adaptNode(node, text) {
     return node;
 }
 
-/**
- * 
- * @param { Element } node
- */
-function rewriteDomLine(node, newLineText, customTag, tagProperties) {
-    node = adaptNode(node, newLineText);
-    node.innerHTML = '';
-    const matches = newLineText.matchAll(customTag);
-    let indexStep = 0;
-    for (const match of matches) {
-        const subtext = newLineText.substring(indexStep, match.index);
-        createNewSpan(node, subtext);
-
-        const sub = newLineText.substring(Number(match.index));
-        const endTag = sub.search(/[ `!@$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/)
-        let tag;
-        if (endTag !== -1) {
-            tag = newLineText.substring(Number(match.index), Number(match.index) + endTag);
-        } else if ((newLineText.length - indexStep - (subtext + sub).length) === 0) {
-            tag = sub;
-        }
-        createNewTagSpan(node, tag, tagProperties);
-        
-        indexStep = Number(match.index) + tag.length;
-    }
-    // create last text node if possible
-    // Need a case to add empty span if tag is end of line
-    if (indexStep < newLineText.length) {
-        const subtext = newLineText.substring(indexStep)
-        createNewSpan(node, subtext);
-    }
-}
-
 export {
+    ALLSPECIALCHARACTERS,
+    adaptNode,
     calculateCaretPosition,
+    createNewSpan,
+    createNewTagSpan,
     retriveAllRawText,
     retrieveComplexText,
     isLineContainSpecialCharacters,
     firstSpecialCharacterMatchIndex,
     cleanAllTextNode,
-    rewriteDomLine,
 };
