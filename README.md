@@ -6,7 +6,7 @@ You only need Vue package to use the lib.
 
 ## Project Status
 
-V1 planned for mid december, but all component are usable.
+Preparing first major version !
 Currently working on documentation with [Histoire](https://histoire.dev/)
 
 ## components
@@ -17,6 +17,10 @@ Small VueJs component "contenteditable div" who can correctly handle hashtag.
 the div is editable and detect hashtag, it trigger an event with the hastag text.
 You can simply search the word with your own api and change the list of available tags.
 
+### pumpkin-summary
+
+summary component who generate a summary based on data send or page rendering.
+
 ### pumpkin-crumbs
 
 A simple breadCrumb with possibility to shrink link list inside a clickable pop-up
@@ -24,10 +28,6 @@ A simple breadCrumb with possibility to shrink link list inside a clickable pop-
 ### pumpkin-intersection-solo
 
 intersection wrapper component for singular element based on https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-
-### pumpkin-summary
-
-summary component who generate a summary based on data send or page rendering.
 
 ### pumpkin-modal
 
