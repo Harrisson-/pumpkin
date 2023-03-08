@@ -71,7 +71,7 @@ const message = (el) => {
         // (tagPosition +1 < reduceLength) false if customTag is first character
         if (tagPosition != -1 && tagPosition +1 < reduceLength && !shrunkLine.substring(tagPosition + 1).includes(" ")) {
           // share node
-          const stringFromTagePosition = line.slice(tagPosition + 1)
+          const stringFromTagePosition = line.slice(tagPosition + 1);
           keyWord = stringFromTagePosition.substring(0, firstSpecialCharacterMatchIndex(stringFromTagePosition));
           lineIndex = index;
           caretPositionInLine = reduceLength;
@@ -126,29 +126,21 @@ function resetCaretPosition(containerDOM, node, addedLength) {
  function rewriteDomLine(node, newLineText) {
     node = adaptNode(node, newLineText);
     node.innerHTML = '';
-    const matches = newLineText.matchAll(props.customTag);
     let indexStep = 0;
-    // rewrite parser..
-    for (const match of matches) {
-        const subtext = newLineText.substring(indexStep, match.index);
-        createNewSpan(node, subtext);
-
-        const sub = newLineText.substring(Number(match.index));
-        const endTag = sub.search(customSpecialCharactersRegex.value);
-        let tag;
-        if (endTag !== -1) {
-            tag = newLineText.substring(Number(match.index), Number(match.index) + endTag);
-        } else if ((newLineText.length - indexStep - (subtext + sub).length) === 0) {
-            tag = sub;
+    const wordsTmp = newLineText.split(' ');
+    for (const word of wordsTmp) {
+        if (!word.includes(props.customTag)) {
+          if (!node.childNodes[indexStep]) {
+            createNewSpan(node, word);
+          } else {
+            node.childNodes[indexStep].textContent += ` ${word}`;
+          }
+        } else {
+          createNewTagSpan(node, ` ${word} `, {highlightColor: props.highlightColor});
+          indexStep += 2;
         }
-        createNewTagSpan(node, tag, {highlightColor: props.highlightColor});
-        
-        indexStep = Number(match.index) + tag.length;
     }
-    if (indexStep < newLineText.length) {
-        const subtext = newLineText.substring(indexStep)
-        createNewSpan(node, subtext);
-    } else if (node.lastChild.attributes.length > 0) {
+    if (node.lastChild.attributes.length > 0) {
       createNewSpan(node, '\u00A0');
     }
 }

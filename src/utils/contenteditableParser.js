@@ -141,8 +141,8 @@ function isLineContainSpecialCharacters(line) {
  * @returns {Number}
  */
 function firstSpecialCharacterMatchIndex(line) {
-    const value = ALLSPECIALCHARACTERSREGEX.exec(line);
-    return value ? value.index : line.length;
+    const value = line.match(/[ `!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?~]/);
+    return value && value.index ? value.index : line.length;
 }
 
 /**
