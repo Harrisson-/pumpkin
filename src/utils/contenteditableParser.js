@@ -87,32 +87,6 @@ function getComplexElementNode(node) {
     return titi;
 }
 
-
-/**
- * @description loop over target chilnodes
- * @param {object} target
- * @returns {Array}
- */
-function retrieveComplexText(target) {
-    const text = [];
-    for(let node of target.childNodes.values()) {
-        text.push(getcomplexNodedatas(node));
-    }
-    /**
-     * [ => 
-     *  [ => line
-     *      {
-     *          value => raw text
-     *          style => attributes.nodeValue
-     *          type => type
-     *          node => ?
-     *      }
-     *  ]
-     * ]
-     */
-    return text;
-}
-
 /**
  * 
  * @param {Object} context 
@@ -125,14 +99,6 @@ function calculateCaretPosition(context, textContainerDOM) {
     preCaretRange.selectNodeContents(textContainerDOM.value);
     preCaretRange.setEnd(range.endContainer, range.endOffset);
     return preCaretRange.toString().length;
-}
-
-/**
- * 
- * @param {String} line 
- */
-function isLineContainSpecialCharacters(line) {
-    return ALLSPECIALCHARACTERSREGEX.test(line);
 }
 
 /**
@@ -187,15 +153,46 @@ function adaptNode(node, text) {
     return node;
 }
 
+/**
+ * 
+ * @param {String} line 
+ */
+function isLineContainSpecialCharacters(line) {
+    return ALLSPECIALCHARACTERSREGEX.test(line);
+}
+
+/**
+ * // REWORK IN FUTUR
+ * @description loop over target chilnodes
+ * @param {object} target
+ * @returns {Array}
+ */
+function retrieveComplexText(target) {
+    const text = [];
+    for(let node of target.childNodes.values()) {
+        text.push(getcomplexNodedatas(node));
+    }
+    /**
+     * [ => 
+     *  [ => line
+     *      {
+     *          value => raw text
+     *          style => attributes.nodeValue
+     *          type => type
+     *          node => ?
+     *      }
+     *  ]
+     * ]
+     */
+    return text;
+}
+
 export {
-    ALLSPECIALCHARACTERS,
     adaptNode,
     calculateCaretPosition,
     createNewSpan,
     createNewTagSpan,
     retriveAllRawText,
-    retrieveComplexText,
-    isLineContainSpecialCharacters,
     firstSpecialCharacterMatchIndex,
     cleanAllTextNode,
 };

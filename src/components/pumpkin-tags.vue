@@ -1,11 +1,8 @@
 <script setup>
 import { ref, computed } from "vue";
 import {
-  ALLSPECIALCHARACTERS,
   retriveAllRawText,
-  retrieveComplexText,
   calculateCaretPosition,
-  isLineContainSpecialCharacters,
   firstSpecialCharacterMatchIndex,
   cleanAllTextNode,
   adaptNode,
@@ -16,7 +13,6 @@ import {
 const textContainerDom = ref(null);
 let tagPosition;
 let lineIndex;
-let caretPositionInLine;
 let keyWord;
 let rawText = [];
 
@@ -28,14 +24,6 @@ const reactiveTags = computed({
     emit("searchWord", searchText);
   },
 });
-
-const customSpecialCharactersRegex = computed(() => {
-  const tagPosition = ALLSPECIALCHARACTERS.indexOf(props.customTag);
-  return new RegExp( 
-    ALLSPECIALCHARACTERS.slice(0, tagPosition) +
-    ALLSPECIALCHARACTERS.slice(tagPosition + 1));
-});
-
 
 const emit = defineEmits(["searchWord"]);
 
@@ -68,9 +56,7 @@ const message = (el) => {
       if (reduceLength - line.length <= 0) {
         let shrunkLine = line.substring(0, reduceLength);
         tagPosition = shrunkLine.lastIndexOf(customeTag)
-        // (tagPosition +1 < reduceLength) false if customTag is first character
         if (tagPosition != -1 && tagPosition +1 < reduceLength && !shrunkLine.substring(tagPosition + 1).includes(" ")) {
-          // share node
           const stringFromTagePosition = line.slice(tagPosition + 1);
           keyWord = stringFromTagePosition.substring(0, firstSpecialCharacterMatchIndex(stringFromTagePosition));
           lineIndex = index;
@@ -95,8 +81,8 @@ async function selectTag(tag) {
   const newLine = lineContent.substring(0, tagPosition + 1) + tag + lineContent.substring((tagPosition + 1) + keyWord.length);
 
   if (props.highlight) {
-    const caretPosition = calculateCaretPosition(window, textContainerDom);
-    console.log('caretPosition', caretPosition);
+    // const caretPosition = calculateCaretPosition(window, textContainerDom);
+    // console.log('caretPosition', caretPosition);
     const lineNode = textContainerDom.value.childNodes[lineIndex];
     rewriteDomLine(lineNode, newLine);
     cleanAllTextNode(textContainerDom.value.childNodes);
